@@ -1,0 +1,95 @@
+# DovSG Large Data Directories (can be downloaded via commands)
+DovSG/checkpoints/
+DovSG/data_example/
+DovSG/third_party/
+
+# DovSG Large Binary Files
+DovSG/*.so
+DovSG/lib_cxx.so
+DovSG/gsnet.so
+
+# Docker Build Cache and Volumes
+docker/volumes/
+docker/.cache/
+docker/.docker/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# System Files
+Thumbs.db
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Model Weights and Checkpoints (outside DovSG)
+*.pth
+*.ckpt
+*.safetensors
+models/
+weights/
+
+# Data Files
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# CUDA/GPU Cache
+.nv/
+
+# Docker Compose Override
+docker-compose.override.yml
+
+# Shared Data (if large)
+shared_data/*.pth
+shared_data/*.h5
+shared_data/models/
+shared_data/checkpoints/
