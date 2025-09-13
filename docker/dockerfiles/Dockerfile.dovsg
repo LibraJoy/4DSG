@@ -1,0 +1,184 @@
+# DovSG Container - CUDA 11.8 + PyTorch 2.3
+FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
+
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV CUDA_HOME=/usr/local/cuda-11.8
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3.9 \
+    python3.9-dev \
+    python3-pip \
+    python3.9-distutils \
+    git \
+    wget \
+    curl \
+    build-essential \
+    cmake \
+    gcc-9 \
+    g++-9 \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libusb-1.0-0 \
+    libusb-1.0-0-dev \
+    ninja-build \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up proper C++ compiler for CUDA extensions
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 90
+
+# Set compiler environment variables for CUDA extensions
+ENV CC=/usr/bin/gcc-9
+ENV CXX=/usr/bin/g++-9
+ENV NVCC_PREPEND_FLAGS='-ccbin /usr/bin/gcc-9'
+ENV TORCH_CUDA_ARCH_LIST="6.0;6.1;7.0;7.5;8.0;8.6"
+
+# Set python3.9 as default and upgrade pip
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 && \
+    python3 -m pip install --upgrade pip
+
+# Install miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
+    rm miniconda.sh
+ENV PATH="/opt/conda/bin:$PATH"
+
+# Configure conda and accept Terms of Service
+RUN conda config --set always_yes yes --set changeps1 no && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
+# Create conda environment for DovSG
+RUN conda create -n dovsg python=3.9 -y
+SHELL ["conda", "run", "-n", "dovsg", "/bin/bash", "-c"]
+
+# Install PyTorch 2.3.1 with CUDA 11.8
+RUN pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu118
+
+# Set working directory
+WORKDIR /app
+
+# Copy and install third-party dependencies in order
+# 1. SAM2
+COPY DovSG/third_party/segment-anything-2 ./third_party/segment-anything-2/
+WORKDIR /app/third_party/segment-anything-2
+# Modify setup.py for compatibility
+RUN sed -i 's/"numpy>=1.24.4"/"numpy>=1.23.0"/' setup.py && \
+    sed -i 's/python_requires=">=3.10.0"/python_requires=">=3.9.0"/' setup.py
+RUN pip install -e . && pip install -e ".[demo]"
+
+# 2. GroundingDINO
+WORKDIR /app
+COPY DovSG/third_party/GroundingDINO ./third_party/GroundingDINO/
+WORKDIR /app/third_party/GroundingDINO
+RUN pip install -e .
+
+# 3. RAM & Tag2Text
+WORKDIR /app
+COPY DovSG/third_party/recognize-anything ./third_party/recognize-anything/
+RUN pip install -r ./third_party/recognize-anything/requirements.txt && \
+    pip install -e ./third_party/recognize-anything/
+
+# 4. ACE
+COPY DovSG/ace ./ace/
+RUN conda install -c conda-forge opencv -y
+WORKDIR /app/ace/dsacstar
+# Fix OpenCV library paths for conda-forge installation
+RUN sed -i 's|opencv_lib_dir = conda_env + '"'"'/lib/opencv4'"'"'|opencv_lib_dir = conda_env + '"'"'/lib'"'"'|g' setup.py
+RUN python setup.py install
+
+# 5. LightGlue
+WORKDIR /app
+COPY DovSG/third_party/LightGlue ./third_party/LightGlue/
+WORKDIR /app/third_party/LightGlue
+RUN python -m pip install -e .
+
+# 6. Install Faiss - use newer version compatible with NumPy 1.26.4
+RUN conda install -c conda-forge faiss-cpu -y
+
+# 7. PyTorch3D
+WORKDIR /app
+COPY DovSG/third_party/pytorch3d ./third_party/pytorch3d/
+WORKDIR /app/third_party/pytorch3d
+RUN python setup.py install
+
+# Install core Python packages with version alignment
+WORKDIR /app
+RUN pip install \
+    ipython \
+    cmake \
+    pybind11 \
+    ninja \
+    scipy==1.10.1 \
+    scikit-learn==1.4.0 \
+    pandas==2.0.3 \
+    hydra-core \
+    openai-clip \
+    timm \
+    matplotlib==3.7.2 \
+    imageio \
+    open3d \
+    numpy-quaternion \
+    more-itertools \
+    pyliblzfse \
+    einops \
+    transformers==4.25.1 \
+    pytorch-lightning \
+    wget \
+    gdown \
+    tqdm \
+    zmq \
+    torch_geometric \
+    numpy==1.26.4 \
+    transforms3d==0.4.2
+
+# Install protobuf and difficult packages
+RUN pip install protobuf==3.19.0
+# Skip MinkowskiEngine for now due to build complexity - can be installed later if needed
+# RUN pip install "setuptools<60.0" && \
+#     pip install MinkowskiEngine==0.5.4 --extra-index-url https://download.pytorch.org/whl/cu121
+RUN pip install graspnetAPI
+
+# Download torch-cluster wheel for CUDA 11.8
+RUN wget https://data.pyg.org/whl/torch-2.3.0%2Bcu118/torch_cluster-1.6.3%2Bpt23cu118-cp39-cp39-linux_x86_64.whl && \
+    pip install torch_cluster-1.6.3+pt23cu118-cp39-cp39-linux_x86_64.whl && \
+    rm torch_cluster-1.6.3+pt23cu118-cp39-cp39-linux_x86_64.whl
+
+# Install remaining packages
+RUN pip install \
+    supervision==0.14.0 \
+    shapely \
+    alphashape \
+    pyrealsense2 \
+    open_clip_torch \
+    graphviz \
+    pyrender \
+    openai==1.56.1 \
+    transforms3d==0.3.1 \
+    scikit-image==0.19.3
+
+# Copy DovSG source code
+COPY DovSG/setup.py ./
+COPY DovSG/dovsg ./dovsg/
+COPY DovSG/demo.py ./
+
+# Install DovSG package
+RUN pip install -e .
+
+# Create directories
+RUN mkdir -p data_example checkpoints shared_data license
+
+# Set up conda activation by default
+RUN conda init bash && \
+    echo "conda activate dovsg" >> ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
+
+# Default command
+CMD ["conda", "run", "-n", "dovsg", "python", "demo.py", "--help"]

@@ -1,0 +1,52 @@
+# version: '3.8'  # Removed as it's obsolete in newer Docker Compose
+
+services:
+  droid-slam:
+    build: 
+      context: ..
+      dockerfile: docker/dockerfiles/Dockerfile.droid-slam
+    container_name: dovsg-droid-slam
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ../DovSG/data_example:/app/data_example
+      - ../DovSG/checkpoints:/app/checkpoints
+      - ../shared_data:/app/shared_data
+      - ../DovSG/dovsg:/app/dovsg
+    working_dir: /app
+    command: tail -f /dev/null  # Keep container running
+    networks:
+      - dovsg-network
+
+  dovsg:
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/Dockerfile.dovsg
+    container_name: dovsg-main
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ../DovSG/data_example:/app/data_example
+      - ../DovSG/checkpoints:/app/checkpoints
+      - ../shared_data:/app/shared_data
+      - ../DovSG/dovsg:/app/dovsg
+      - ../DovSG/demo.py:/app/demo.py
+    working_dir: /app
+    depends_on:
+      - droid-slam
+    ports:
+      - "8888:8888"  # For Jupyter if needed
+    command: tail -f /dev/null  # Keep container running
+    networks:
+      - dovsg-network
+
+networks:
+  dovsg-network:
+    driver: bridge
+
+volumes:
+  shared_data:
