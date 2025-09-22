@@ -1,0 +1,91 @@
+# Development Docker Compose for DovSG
+# This configuration prioritizes interactive debugging and live code editing
+
+services:
+  droid-slam-dev:
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/Dockerfile.droid-slam
+    container_name: dovsg-droid-slam-dev
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      # Live code editing - mount source code directly
+      - ../DovSG/data_example:/app/data_example
+      - ../DovSG/checkpoints:/app/checkpoints
+      - ../shared_data:/app/shared_data
+      - ../DovSG/dovsg:/app/dovsg
+      - ../DovSG/third_party/DROID-SLAM:/app/DROID-SLAM
+      # Mount development scripts
+      - ./scripts:/app/scripts
+    working_dir: /app
+    # Keep container running for interactive access
+    command: tail -f /dev/null
+    networks:
+      - dovsg-network
+    tty: true
+    stdin_open: true
+
+  dovsg-dev:
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/Dockerfile.dovsg
+    container_name: dovsg-main-dev
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      # Live code editing - mount source code directly
+      - ../DovSG/data_example:/app/data_example
+      - ../DovSG/checkpoints:/app/checkpoints
+      - ../shared_data:/app/shared_data
+      - ../DovSG/dovsg:/app/dovsg
+      - ../DovSG/demo.py:/app/demo.py
+      - ../DovSG/setup.py:/app/setup.py
+      # Mount third-party code for development
+      - ../DovSG/third_party:/app/third_party
+      - ../DovSG/ace:/app/ace
+      # Mount development scripts
+      - ./scripts:/app/scripts
+    working_dir: /app
+    depends_on:
+      - droid-slam-dev
+    ports:
+      - "8888:8888"  # For Jupyter if needed
+      - "6006:6006"  # For TensorBoard if needed
+    # Keep container running for interactive access
+    command: tail -f /dev/null
+    networks:
+      - dovsg-network
+    tty: true
+    stdin_open: true
+
+  # Lightweight debug container without full build
+  dovsg-debug:
+    image: nvidia/cuda:12.1.0-devel-ubuntu20.04
+    container_name: dovsg-debug
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DEBIAN_FRONTEND=noninteractive
+    volumes:
+      - ../DovSG:/app/DovSG
+      - ../shared_data:/app/shared_data
+      - ./scripts:/app/scripts
+    working_dir: /app
+    command: tail -f /dev/null
+    networks:
+      - dovsg-network
+    tty: true
+    stdin_open: true
+
+networks:
+  dovsg-network:
+    driver: bridge
+
+volumes:
+  shared_data:

@@ -92,7 +92,7 @@ cd docker/
 docker compose exec dovsg conda run -n dovsg python demo.py --help
 ```
 
-## 🔧 Usage
+## Usage
 
 ### Common Commands (run from docker/ folder):
 ```bash

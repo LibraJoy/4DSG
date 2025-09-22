@@ -1,9 +1,9 @@
-# DovSG Container - CUDA 11.8 + PyTorch 2.3
-FROM nvidia/cuda:11.8.0-devel-ubuntu20.04
+# DovSG Container - CUDA 12.1 + PyTorch 2.3
+FROM nvidia/cuda:12.1.0-devel-ubuntu20.04
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
-ENV CUDA_HOME=/usr/local/cuda-11.8
+ENV CUDA_HOME=/usr/local/cuda-12.1
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -59,8 +59,8 @@ RUN conda config --set always_yes yes --set changeps1 no && \
 RUN conda create -n dovsg python=3.9 -y
 SHELL ["conda", "run", "-n", "dovsg", "/bin/bash", "-c"]
 
-# Install PyTorch 2.3.1 with CUDA 11.8
-RUN pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu118
+# Install PyTorch 2.3.1 with CUDA 12.1
+RUN pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https://download.pytorch.org/whl/cu121
 
 # Set working directory
 WORKDIR /app
@@ -92,7 +92,7 @@ RUN conda install -c conda-forge opencv -y
 WORKDIR /app/ace/dsacstar
 # Fix OpenCV library paths for conda-forge installation
 RUN sed -i 's|opencv_lib_dir = conda_env + '"'"'/lib/opencv4'"'"'|opencv_lib_dir = conda_env + '"'"'/lib'"'"'|g' setup.py
-RUN python setup.py install
+RUN pip install -e .
 
 # 5. LightGlue
 WORKDIR /app
@@ -107,7 +107,7 @@ RUN conda install -c conda-forge faiss-cpu -y
 WORKDIR /app
 COPY DovSG/third_party/pytorch3d ./third_party/pytorch3d/
 WORKDIR /app/third_party/pytorch3d
-RUN python setup.py install
+RUN pip install -e .
 
 # Install core Python packages with version alignment
 WORKDIR /app
@@ -136,24 +136,28 @@ RUN pip install \
     tqdm \
     zmq \
     torch_geometric \
-    numpy==1.26.4 \
+    numpy==1.23.0 \
     transforms3d==0.4.2
 
 # Install protobuf and difficult packages
 RUN pip install protobuf==3.19.0
+
+# Install compatible versions of numpy and transforms3d to fix compatibility issues
+RUN pip install --no-cache-dir --force-reinstall "numpy==1.23.0" "transforms3d==0.4.1"
+
 # Skip MinkowskiEngine for now due to build complexity - can be installed later if needed
 # RUN pip install "setuptools<60.0" && \
 #     pip install MinkowskiEngine==0.5.4 --extra-index-url https://download.pytorch.org/whl/cu121
 RUN pip install graspnetAPI
 
-# Download torch-cluster wheel for CUDA 11.8
-RUN wget https://data.pyg.org/whl/torch-2.3.0%2Bcu118/torch_cluster-1.6.3%2Bpt23cu118-cp39-cp39-linux_x86_64.whl && \
-    pip install torch_cluster-1.6.3+pt23cu118-cp39-cp39-linux_x86_64.whl && \
-    rm torch_cluster-1.6.3+pt23cu118-cp39-cp39-linux_x86_64.whl
+# Download torch-cluster wheel for CUDA 12.1
+RUN wget https://data.pyg.org/whl/torch-2.3.0%2Bcu121/torch_cluster-1.6.3%2Bpt23cu121-cp39-cp39-linux_x86_64.whl && \
+    pip install torch_cluster-1.6.3+pt23cu121-cp39-cp39-linux_x86_64.whl && \
+    rm torch_cluster-1.6.3+pt23cu121-cp39-cp39-linux_x86_64.whl
 
 # Install remaining packages
 RUN pip install \
-    supervision==0.14.0 \
+    supervision>=0.22.0 \
     shapely \
     alphashape \
     pyrealsense2 \
@@ -161,13 +165,15 @@ RUN pip install \
     graphviz \
     pyrender \
     openai==1.56.1 \
-    transforms3d==0.3.1 \
     scikit-image==0.19.3
 
 # Copy DovSG source code
 COPY DovSG/setup.py ./
 COPY DovSG/dovsg ./dovsg/
 COPY DovSG/demo.py ./
+
+# Note: Perception modules already exist in the DovSG source code
+# They will be copied with the DovSG source code and don't need to be created
 
 # Install DovSG package
 RUN pip install -e .

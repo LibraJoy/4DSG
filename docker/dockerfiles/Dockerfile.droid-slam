@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
     gcc-10 \
     g++-10 \
     libsuitesparse-dev \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set python3.9 as default and upgrade pip
@@ -68,13 +70,19 @@ WORKDIR /app
 # Copy DROID-SLAM source code
 COPY DovSG/third_party/DROID-SLAM ./DROID-SLAM/
 
+# Initialize git submodules for DROID-SLAM dependencies
+WORKDIR /app/DROID-SLAM
+RUN git submodule update --init --recursive
+
 # Set environment variables for compilation
 ENV CC=/usr/bin/gcc-10
 ENV CXX=/usr/bin/g++-10
 
-# Install DROID-SLAM
+# Install DROID-SLAM (handle multiple setup() calls by using setup.py directly)
 WORKDIR /app/DROID-SLAM
-RUN conda run -n droidenv python setup.py install
+# Build extensions first, then install
+RUN conda run -n droidenv python setup.py build_ext --inplace
+RUN conda run -n droidenv python setup.py develop
 
 # Create data directories
 WORKDIR /app

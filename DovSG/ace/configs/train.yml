@@ -2,9 +2,9 @@ encoder_path: "ace/ace_encoder_pretrained.pt"
 num_head_blocks: 1
 learning_rate_min: 0.0005
 learning_rate_max: 0.005
-training_buffer_size: 8000000
-samples_per_image: 1024
-batch_size: 5120
+training_buffer_size: 3000000
+samples_per_image: 512
+batch_size: 2560
 epochs: 16
 repro_loss_hard_clamp: 1000
 repro_loss_soft_clamp: 50
@@ -14,7 +14,7 @@ use_homogeneous: true
 use_aug: true
 aug_rotation: 15
 aug_scale: 1.5
-image_resolution: 384
+image_resolution: 256
 repro_loss_type: "dyntanh"  # ["l1", "l1+sqrt", "l1+log", "tanh", "dyntanh"]
 repro_loss_schedule: "circle"
 depth_min: 0.1

@@ -2,16 +2,7 @@
 
 A comprehensive Docker-based environment for **DovSG (Dense Open-Vocabulary 3D Scene Graphs)** that works across different Ubuntu versions and hardware configurations.
 
-## 🎯 What This Is
-
-This repository provides a **complete Docker setup** for DovSG that:
-- ✅ **Works out-of-the-box** on Ubuntu 20.04, 22.04, and other Linux distributions
-- ✅ **CUDA-aligned environment** - no more compilation errors
-- ✅ **Clean separation** - Docker environment + original DovSG code
-- ✅ **Git-friendly** - large files excluded, easy to share and clone
-- ✅ **Production-ready** - fixed all dependency conflicts and compatibility issues
-
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 4DSG/
@@ -26,14 +17,14 @@ This repository provides a **complete Docker setup** for DovSG that:
 │   ├── dovsg/                  # Core DovSG code
 │   ├── demo.py
 │   ├── setup.py
-│   ├── checkpoints/           # ⚠️  IGNORED - Download separately (see below)
-│   ├── data_example/          # ⚠️  IGNORED - Download separately (see below) 
-│   ├── third_party/           # ⚠️  IGNORED - Downloaded during Docker build
+│   ├── checkpoints/           # IGNORED - Download separately (see below)
+│   ├── data_example/          # IGNORED - Download separately (see below) 
+│   ├── third_party/           # IGNORED - Downloaded during Docker build
 │   └── ...
 └── shared_data/               # Runtime data sharing between containers
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites (One-time setup per machine)
 
@@ -51,14 +42,14 @@ sudo systemctl restart docker
 
 # 3. Add user to docker group 
 sudo usermod -aG docker $USER
-# ⚠️  IMPORTANT: Log out and log back in for group changes to take effect
+# IMPORTANT: Log out and log back in for group changes to take effect
 
 # 4. Verify installation (after logging back in)
 docker --version
 docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu20.04 nvidia-smi
 ```
 
-**⚠️ CRITICAL**: You MUST log out and log back in after step 3, or the Docker setup will fail with permission errors.
+** CRITICAL**: You MUST log out and log back in after step 3, or the Docker setup will fail with permission errors.
 
 ### Setup & Installation
 
@@ -84,7 +75,7 @@ cd docker/
 ./scripts/06_run_demo.sh              # Run demo
 ```
 
-## 📦 Large Files (Not in Git Repository)
+## Large Files (Not in Git Repository)
 
 Due to Git size limitations, these large directories must be downloaded separately:
 
@@ -113,13 +104,13 @@ Due to Git size limitations, these large directories must be downloaded separate
 # Create scripts/download_large_files.sh
 cd docker/
 ./scripts/03_download_checkpoints.sh
-echo "📥 Checkpoints downloaded"
-echo "⚠️  Please manually download sample data from Google Drive"
+echo "Checkpoints downloaded"
+echo "   manually download sample data from Google Drive"
 echo "   URL: https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x"
 echo "   Extract to: ../DovSG/data_example/room1/"
 ```
 
-## 🔧 Usage
+## Usage
 
 ### Common Commands (run from docker/ folder):
 
@@ -160,34 +151,10 @@ git commit -m "Your improvements to DovSG"
 git push
 ```
 
-## 🎨 What's Fixed
-
-This setup resolves all the major compatibility issues:
-
-### ✅ **CUDA Compilation Issues**
-- **Problem**: "CUDA version mismatch" when building GroundingDINO C++ extensions
-- **Solution**: Aligned CUDA 11.8 throughout the entire Docker stack
-- **Result**: All C++ extensions compile successfully
-
-### ✅ **NumPy/Faiss Compatibility**
-- **Problem**: `RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xe`
-- **Solution**: Coordinated NumPy 1.26.4 + modern Faiss from conda-forge
-- **Result**: All imports work without API conflicts
-
-### ✅ **Transforms3d Compatibility**
-- **Problem**: `AttributeError: module 'numpy' has no attribute 'float'`
-- **Solution**: Upgraded transforms3d to 0.4.2 for NumPy 1.20+ compatibility
-- **Result**: All math operations work correctly
-
-### ✅ **Clean Environment**
-- **Problem**: Dependency conflicts between pip and conda packages
-- **Solution**: Systematic package management and version alignment
-- **Result**: No dependency warnings, stable runtime
-
-## 🏗️ Docker Services
+## Docker Services
 
 ### Main Services:
-- **dovsg**: Main DovSG environment (CUDA 11.8, PyTorch 2.3)
+- **dovsg**: Main DovSG environment (CUDA 12.1, PyTorch 2.3)
 - **droid-slam**: DROID-SLAM environment (CUDA 11.8, PyTorch 1.10)
 
 ### Built-in Components:
@@ -199,20 +166,8 @@ This setup resolves all the major compatibility issues:
 - DROID-SLAM
 - All dependencies pre-compiled and tested
 
-## 📋 System Requirements
 
-### Hardware:
-- **GPU**: NVIDIA GPU with 8GB+ VRAM (tested on RTX 3080, RTX 4090)
-- **RAM**: 16GB+ system RAM recommended
-- **Storage**: 50GB+ free space (for models and data)
-
-### Software:
-- **OS**: Ubuntu 20.04, 22.04, or other Docker-compatible Linux
-- **Docker**: Version 20.10+
-- **NVIDIA Drivers**: 470+ 
-- **CUDA**: Not required on host (provided by Docker)
-
-## 🔄 Migration from Original DovSG
+## Migration from Original DovSG
 
 If you have an existing DovSG setup:
 
@@ -232,7 +187,7 @@ cd 4DSG-new/docker/
 ./scripts/setup.sh
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Docker Permission Issues:
 ```bash
@@ -260,40 +215,17 @@ docker system prune -a
 docker compose build --no-cache
 ```
 
-## 🤝 Contributing
 
-1. Fork this repository
-2. Make improvements to DovSG code or Docker setup
-3. Test with `docker compose exec dovsg conda run -n dovsg python demo.py`
-4. Submit pull request
-
-### Development Notes:
-- **Large files**: Never commit checkpoints/data to Git - use download scripts
-- **Docker changes**: Test on clean system before committing
-- **DovSG changes**: Maintain compatibility with original DovSG API
-
-## 📄 License
+## License
 
 This project combines:
 - **DovSG**: Original license from [BJHYZJ/DovSG](https://github.com/BJHYZJ/DovSG)
 - **Docker Setup**: MIT License (this repository)
 
-## 🔗 References
+## References
 
 - **Original DovSG**: [https://github.com/BJHYZJ/DovSG](https://github.com/BJHYZJ/DovSG)
 - **DovSG Paper**: [Dense Open-Vocabulary 3D Scene Graphs](https://arxiv.org/abs/your-paper-link)
 - **Docker Documentation**: [docker/README.md](docker/README.md)
 
 ---
-
-## 🎯 Quick Test
-
-Verify everything works:
-```bash
-cd docker/
-docker compose up -d
-docker compose exec dovsg conda run -n dovsg python demo.py --help
-# Should show DovSG demo options without errors
-```
-
-**Status**: ✅ **Production Ready** - All compatibility issues resolved, tested on RTX 3080/4090

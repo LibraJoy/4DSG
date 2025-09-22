@@ -14,7 +14,7 @@ def train_ace(scene, output_map_file):
 
     options_path = "ace/configs/train.yml"
     options = OmegaConf.load(options_path)
-    
+
     options.scene = scene
     options.output_map_file = output_map_file
 

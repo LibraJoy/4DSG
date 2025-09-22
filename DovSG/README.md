@@ -34,7 +34,7 @@ If our code is used in your project, please cite our paper following the bibtex 
   year={2025},
   volume={10},
   number={5},
-  pages={4252-4259},
+pages={4252-4259},
   keywords={Three-dimensional displays;Robots;Planning;Semantics;Robot kinematics;Navigation;Containers;Visualization;Mobile robots;Manipulator dynamics;3D scene graph;long-term tasks;mobile manipulation;open vocabulary},
   doi={10.1109/LRA.2025.3547643}}
 ```
@@ -65,7 +65,7 @@ Ubuntu 20.04. [ROS Installation](http://wiki.ros.org/ROS/Installation).
 conda create -n dovsg python=3.9 -y
 conda activate dovsg
 ```
-- Install **DovSG** environment for running the DovSG: [install_dovsg.md](docs/install_dovsg.md).
+- Install **DovSG** environment for running the DovSG: [install_dovsg.md](docs/ins🔧 tall_dovsg.md).
 
 
 - Install **DROID-SLAM** environment for scan the room: [install_droidslam.md](docs/install_droidslam.md).
