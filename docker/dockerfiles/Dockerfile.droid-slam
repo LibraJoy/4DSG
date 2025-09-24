@@ -77,12 +77,45 @@ RUN git submodule update --init --recursive
 # Set environment variables for compilation
 ENV CC=/usr/bin/gcc-10
 ENV CXX=/usr/bin/g++-10
+ENV CUDA_HOME=/usr/local/cuda-11.8
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:/opt/conda/envs/droidenv/lib:${LD_LIBRARY_PATH}
 
-# Install DROID-SLAM (handle multiple setup() calls by using setup.py directly)
+# Install lietorch first (required dependency)
+WORKDIR /app/DROID-SLAM/thirdparty/lietorch
+RUN conda run -n droidenv python setup.py install
+
+# Install DROID-SLAM with proper CUDA library paths
 WORKDIR /app/DROID-SLAM
-# Build extensions first, then install
-RUN conda run -n droidenv python setup.py build_ext --inplace
+# Ensure CUDA libraries are in the conda environment
+RUN conda run -n droidenv pip install ninja
+
+# Build DROID-SLAM extensions - the setup.py has dual setup() calls
+# First, build droid_backends by modifying setup.py temporarily
+RUN cp setup.py setup_original.py
+RUN sed -n '1,31p' setup_original.py > setup_droid.py
+RUN conda run -n droidenv python setup_droid.py build_ext --inplace
+
+# Then restore original and install normally (will handle lietorch)
+RUN mv setup_original.py setup.py
 RUN conda run -n droidenv python setup.py develop
+
+# Fix runtime library paths for PyTorch libraries
+RUN conda run -n droidenv python -c "import torch; print('PyTorch version:', torch.__version__)"
+
+# Add PyTorch library directory to LD_LIBRARY_PATH permanently
+ENV LD_LIBRARY_PATH=/opt/conda/envs/droidenv/lib/python3.9/site-packages/torch/lib:${LD_LIBRARY_PATH}
+
+# Create symlinks for commonly missing libraries
+RUN find /opt/conda/envs/droidenv/lib/python3.9/site-packages/torch/lib -name "*.so*" -exec ln -sf {} /opt/conda/envs/droidenv/lib/ \; || true
+
+# Set runtime environment to ensure libraries are found
+RUN echo 'export LD_LIBRARY_PATH="/opt/conda/envs/droidenv/lib/python3.9/site-packages/torch/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
+
+# Note: Backend verification will be done after container starts to avoid build-time library issues
+
+# Ensure numpy version compatibility (protective override)
+RUN conda run -n droidenv pip install --no-cache-dir --force-reinstall "numpy==1.23.0"
 
 # Create data directories
 WORKDIR /app

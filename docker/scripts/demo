@@ -1,0 +1,186 @@
+#!/bin/bash
+
+# 06_run_demo.sh
+# Easy demo runner with common configurations
+
+set -e
+
+echo "DovSG Demo Runner"
+echo "===================="
+
+# Check if containers are running
+check_containers_running() {
+    if ! docker compose ps | grep -q "Up"; then
+        echo " Containers not running!"
+        echo "Start them with: ./scripts/05_start_containers.sh"
+        exit 1
+    fi
+    echo " Containers are running"
+}
+
+# Check if sample data exists
+check_sample_data() {
+    if [ -d "../DovSG/data_example/room1" ]; then
+        echo "Sample data found"
+        return 0
+    else
+        echo "  Sample data not found at ../DovSG/data_example/room1"
+        echo ""
+        echo "Please download sample data from:"
+        echo "https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x?usp=sharing"
+        echo "Extract to: ../DovSG/data_example/room1/"
+        echo ""
+        read -p "Continue anyway? (y/N): " -r
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    fi
+}
+
+# Show demo help
+show_demo_help() {
+    echo ""
+    echo " Demo Options:"
+    echo "================"
+    echo "1. Show demo help"
+    echo "2. Run full demo with sample data"
+    echo "3. Run preprocessing only"
+    echo "4. Run DROID-SLAM pose estimation"
+    echo "5. Run custom demo"
+    echo ""
+}
+
+# Basic help
+show_basic_help() {
+    echo ""
+    echo " DovSG Demo Help:"
+    echo "==================="
+    
+    docker compose exec dovsg conda run -n dovsg python demo.py --help
+}
+
+# Preprocessing only
+run_preprocessing() {
+    echo ""
+    echo " Running preprocessing only..."
+    echo ""
+    
+    docker compose exec dovsg conda run -n dovsg python demo.py \
+        --tags "room1" \
+        --preprocess
+}
+
+# Full demo
+run_full_demo() {
+    echo ""
+    echo " Running full demo..."
+    echo ""
+    
+    docker compose exec dovsg conda run -n dovsg python demo.py \
+        --tags "room1" \
+        --preprocess \
+        --debug \
+        --task_scene_change_level "Minor Adjustment" \
+        --task_description "Please move the red pepper to the plate, then move the green pepper to plate."
+}
+
+# Custom demo
+run_custom_demo() {
+    echo ""
+    echo "  Custom demo parameters:"
+    echo ""
+    
+    read -p "Enter tags (default: room1): " tags
+    tags=${tags:-room1}
+    
+    echo ""
+    echo "Options:"
+    echo "1. --preprocess (run preprocessing)"
+    echo "2. --debug (enable debug mode)"
+    echo "3. --scanning_room (scan new room)"
+    echo ""
+    read -p "Enter additional flags (space-separated): " flags
+    
+    read -p "Enter task description: " task_desc
+    read -p "Enter task scene change level (Minor Adjustment/Major Change): " change_level
+    
+    echo ""
+    echo "Running custom demo..."
+    
+    cmd="docker compose exec dovsg conda run -n dovsg python demo.py --tags \"$tags\""
+    
+    if [ -n "$flags" ]; then
+        cmd="$cmd $flags"
+    fi
+    
+    if [ -n "$task_desc" ]; then
+        cmd="$cmd --task_description \"$task_desc\""
+    fi
+    
+    if [ -n "$change_level" ]; then
+        cmd="$cmd --task_scene_change_level \"$change_level\""
+    fi
+    
+    echo "Command: $cmd"
+    echo ""
+    
+    eval $cmd
+}
+
+# DROID-SLAM pose estimation using native DROID-SLAM demo
+run_droid_slam() {
+    echo ""
+    echo " Running DROID-SLAM pose estimation (native method)..."
+    echo ""
+
+    if [ ! -f "../DovSG/data_example/room1/calib.txt" ]; then
+        echo " Calibration file not found"
+        echo "Expected: ../DovSG/data_example/room1/calib.txt"
+        read -p "Continue anyway? (y/N): " -r
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            return
+        fi
+    fi
+
+    docker compose exec droid-slam bash -c "cd /app/DROID-SLAM && conda run -n droidenv python demo.py \
+        --imagedir=/app/data_example/room1 \
+        --calib=/app/data_example/room1/calib.txt \
+        --t0=0 \
+        --stride=2 \
+        --weights=/app/checkpoints/droid-slam/droid.pth \
+        --buffer=256"
+}
+
+
+# Main menu
+main() {
+    check_containers_running
+    check_sample_data
+
+    show_demo_help
+    read -p "Choose an option (1-5): " choice
+
+    case $choice in
+        1)
+            show_basic_help
+            ;;
+        2)
+            run_full_demo
+            ;;
+        3)
+            run_preprocessing
+            ;;
+        4)
+            run_droid_slam
+            ;;
+        5)
+            run_custom_demo
+            ;;
+        *)
+            echo " Invalid option. Please choose 1-5."
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

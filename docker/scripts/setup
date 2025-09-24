@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# setup - Complete DovSG development environment setup
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
+echo "🚀 DovSG Development Environment Setup"
+echo "======================================"
+
+check_directory
+check_docker
+
+echo " Checking prerequisites..."
+check_nvidia_docker
+
+echo -e " ${GREEN}Prerequisites check completed${NC}"
+echo ""
+
+# Check if this is a fresh setup or partial setup
+if ! docker images | grep -q "docker-droid-slam\|docker-dovsg"; then
+    echo "  Fresh setup detected - will build containers"
+    NEED_BUILD=true
+else
+    echo " Container images found - skipping build (use ./scripts/build --no-cache to rebuild)"
+    NEED_BUILD=false
+fi
+
+if [ ! -d "../DovSG/checkpoints/droid-slam" ] || [ ! -f "../DovSG/checkpoints/droid-slam/droid.pth" ]; then
+    echo " Checkpoints not found - will download"
+    NEED_DOWNLOAD=true
+else
+    echo " Checkpoints found - skipping download"
+    NEED_DOWNLOAD=false
+fi
+
+echo ""
+
+# Create directories if needed
+if [ ! -d "../DovSG/checkpoints" ] || [ ! -d "../shared_data" ]; then
+    echo " Creating necessary directories..."
+    "$SCRIPT_DIR/init-dirs"
+fi
+
+# Download checkpoints if needed
+if [ "$NEED_DOWNLOAD" = true ]; then
+    echo " Downloading checkpoints (this may take a while)..."
+    "$SCRIPT_DIR/download"
+fi
+
+# Build containers if needed
+if [ "$NEED_BUILD" = true ]; then
+    echo "  Building containers (this will take 30-60 minutes)..."
+    "$SCRIPT_DIR/build"
+fi
+
+# Start containers
+echo " Starting containers..."
+"$SCRIPT_DIR/start"
+
+echo ""
+echo -e " ${GREEN}Setup complete!${NC}"
+
+print_next_steps

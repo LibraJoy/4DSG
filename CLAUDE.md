@@ -23,7 +23,10 @@ When received user's require about editing code, follow these principles:
 - Dependency Inversion Principle
 
 ### Remove file carefully
-- Never Remove file except this project, like when remove docker image, never remove image not related to this projects!!!
+- Never remove file except from this project, like when remove docker image, don't do command like *docker system prune -a*.
+
+### Keep the content generate style serious and concise
+- Never generate content with icons or emoticons
 
 ### 
 

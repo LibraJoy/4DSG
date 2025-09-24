@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# init-dirs - Create necessary directory structure for DovSG
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
+echo " Creating Directory Structure"
+echo "==============================="
+
+# Create necessary directories
+echo "Creating data directories..."
+
+mkdir -p ../DovSG/data_example
+mkdir -p ../DovSG/checkpoints
+mkdir -p ../shared_data
+
+echo -e " ${GREEN}Created data directories${NC}"
+
+# Create checkpoint subdirectories
+echo "Creating checkpoint structure..."
+CHECKPOINTS_DIR="../DovSG/checkpoints"
+mkdir -p "$CHECKPOINTS_DIR"/{droid-slam,GroundingDINO,segment-anything-2,recognize_anything,bert-base-uncased,CLIP-ViT-H-14-laion2B-s32B-b79K,anygrasp}
+
+echo -e " ${GREEN}Created checkpoint subdirectories${NC}"
+echo ""
+echo -e " ${GREEN}Directory setup completed!${NC}"

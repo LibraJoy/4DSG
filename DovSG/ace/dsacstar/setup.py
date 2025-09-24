@@ -12,7 +12,7 @@ if len(conda_env) > 0 and len(opencv_inc_dir) == 0 and len(opencv_lib_dir) == 0:
 	print("Detected active conda environment:", conda_env)
 	
 	opencv_inc_dir = conda_env + '/include/opencv4'
-	opencv_lib_dir = conda_env + '/lib/opencv4'
+	opencv_lib_dir = conda_env + '/lib'
 
 	print("Assuming OpenCV dependencies in:")
 	print(opencv_inc_dir)

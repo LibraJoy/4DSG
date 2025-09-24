@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# start - Start and manage Docker containers for DovSG development
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
+check_directory
+
+echo " Container Management"
+echo "======================="
+
+# Parse command line arguments
+ACTION="start"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --stop)
+            ACTION="stop"
+            shift
+            ;;
+        --restart)
+            ACTION="restart"
+            shift
+            ;;
+        --status)
+            ACTION="status"
+            shift
+            ;;
+        --test)
+            ACTION="test"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: ./scripts/start [options]"
+            echo ""
+            echo "Options:"
+            echo "  (no options)    Start containers (default)"
+            echo "  --stop          Stop containers"
+            echo "  --restart       Restart containers"
+            echo "  --status        Show container status"
+            echo "  --test          Test container functionality"
+            echo "  -h, --help      Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 1
+            ;;
+    esac
+done
+
+# Execute the requested action
+case $ACTION in
+    "start")
+        check_containers_built
+        start_containers
+        ;;
+    "stop")
+        stop_containers
+        ;;
+    "restart")
+        check_containers_built
+        restart_containers
+        ;;
+    "status")
+        show_container_status
+        ;;
+    "test")
+        check_containers_built
+        test_containers
+        ;;
+esac

@@ -65,7 +65,7 @@ Ubuntu 20.04. [ROS Installation](http://wiki.ros.org/ROS/Installation).
 conda create -n dovsg python=3.9 -y
 conda activate dovsg
 ```
-- Install **DovSG** environment for running the DovSG: [install_dovsg.md](docs/ins🔧 tall_dovsg.md).
+- Install **DovSG** environment for running the DovSG: [install_dovsg.md](docs/install_dovsg.md).
 
 
 - Install **DROID-SLAM** environment for scan the room: [install_droidslam.md](docs/install_droidslam.md).

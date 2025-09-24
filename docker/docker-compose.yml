@@ -1,8 +1,9 @@
-# version: '3.8'  # Removed as it's obsolete in newer Docker Compose
+# DovSG Development Environment
+# Optimized for interactive development and debugging
 
 services:
   droid-slam:
-    build: 
+    build:
       context: ..
       dockerfile: docker/dockerfiles/Dockerfile.droid-slam
     container_name: dovsg-droid-slam
@@ -11,14 +12,20 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
+      # Data and model volumes
       - ../DovSG/data_example:/app/data_example
       - ../DovSG/checkpoints:/app/checkpoints
       - ../shared_data:/app/shared_data
+      # Source code for live editing
       - ../DovSG/dovsg:/app/dovsg
+      - ../DovSG/third_party/DROID-SLAM:/app/DROID-SLAM
     working_dir: /app
     command: tail -f /dev/null  # Keep container running
     networks:
       - dovsg-network
+    # Interactive development features
+    tty: true
+    stdin_open: true
 
   dovsg:
     build:
@@ -30,23 +37,29 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
+      # Data and model volumes
       - ../DovSG/data_example:/app/data_example
       - ../DovSG/checkpoints:/app/checkpoints
       - ../shared_data:/app/shared_data
+      # Source code for live editing
       - ../DovSG/dovsg:/app/dovsg
       - ../DovSG/demo.py:/app/demo.py
+      - ../DovSG/setup.py:/app/setup.py
+      - ../DovSG/ace:/app/ace
+      - ../DovSG/third_party:/app/third_party
     working_dir: /app
     depends_on:
       - droid-slam
     ports:
-      - "8888:8888"  # For Jupyter if needed
+      - "8888:8888"  # For Jupyter notebook
+      - "6006:6006"  # For TensorBoard
     command: tail -f /dev/null  # Keep container running
     networks:
       - dovsg-network
+    # Interactive development features
+    tty: true
+    stdin_open: true
 
 networks:
   dovsg-network:
     driver: bridge
-
-volumes:
-  shared_data:

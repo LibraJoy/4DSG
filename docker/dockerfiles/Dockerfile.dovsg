@@ -91,7 +91,7 @@ COPY DovSG/ace ./ace/
 RUN conda install -c conda-forge opencv -y
 WORKDIR /app/ace/dsacstar
 # Fix OpenCV library paths for conda-forge installation
-RUN sed -i 's|opencv_lib_dir = conda_env + '"'"'/lib/opencv4'"'"'|opencv_lib_dir = conda_env + '"'"'/lib'"'"'|g' setup.py
+RUN sed -i "s|opencv_lib_dir = conda_env + '/lib/opencv4'|opencv_lib_dir = conda_env + '/lib'|g" setup.py
 RUN pip install -e .
 
 # 5. LightGlue
@@ -135,15 +135,12 @@ RUN pip install \
     gdown \
     tqdm \
     zmq \
-    torch_geometric \
+    torch_geometric==2.3.1 \
     numpy==1.23.0 \
-    transforms3d==0.4.2
+    transforms3d==0.4.1
 
 # Install protobuf and difficult packages
 RUN pip install protobuf==3.19.0
-
-# Install compatible versions of numpy and transforms3d to fix compatibility issues
-RUN pip install --no-cache-dir --force-reinstall "numpy==1.23.0" "transforms3d==0.4.1"
 
 # Skip MinkowskiEngine for now due to build complexity - can be installed later if needed
 # RUN pip install "setuptools<60.0" && \
@@ -178,8 +175,18 @@ COPY DovSG/demo.py ./
 # Install DovSG package
 RUN pip install -e .
 
+# FINAL FIX: Install compatible versions of numpy and transforms3d AFTER ALL other installations
+# This must be the VERY LAST step as multiple packages override transforms3d to incompatible versions
+RUN pip install --no-cache-dir --force-reinstall "numpy==1.23.0" "transforms3d==0.4.1"
+
 # Create directories
 RUN mkdir -p data_example checkpoints shared_data license
+
+# Add PyTorch library directory to LD_LIBRARY_PATH permanently
+ENV LD_LIBRARY_PATH=/opt/conda/envs/dovsg/lib/python3.9/site-packages/torch/lib:${LD_LIBRARY_PATH}
+
+# Set runtime environment to ensure PyTorch libraries are found
+RUN echo 'export LD_LIBRARY_PATH="/opt/conda/envs/dovsg/lib/python3.9/site-packages/torch/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
 
 # Set up conda activation by default
 RUN conda init bash && \

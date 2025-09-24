@@ -76,7 +76,7 @@ def rgb_depth_to_pcd(args):
 
     xyzs = []
     rgbs = []
-    for index in tqdm(range(0, min(len(color_image_paths), len(point_paths), len(pose_paths), len(mask_paths)), 5), desc="point cloud"):
+    for index in tqdm(range(0, len(color_image_paths), 5), desc="point cloud"):
         img_path = color_image_paths[index]
         point_path = point_paths[index]
         pose_path = pose_paths[index]
