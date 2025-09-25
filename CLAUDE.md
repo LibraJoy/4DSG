@@ -22,6 +22,11 @@ When received user's require about editing code, follow these principles:
 - Interface Segregation Principle
 - Dependency Inversion Principle
 
+### TDD (Test-Driven Development) If possible
+- First, write a test for a specific function that fails
+- Then, write the minimum amount of code necessary to make the test pass
+- Finally, clean up and improve both the test and production code while ensuring the tests still pass
+
 ### Remove file carefully
 - Never remove file except from this project, like when remove docker image, don't do command like *docker system prune -a*.
 
