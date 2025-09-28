@@ -32,10 +32,16 @@ services:
       context: ..
       dockerfile: docker/dockerfiles/Dockerfile.dovsg
     container_name: dovsg-main
-    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
+      - DISPLAY=${DISPLAY:-:0}
     volumes:
       # Data and model volumes
       - ../DovSG/data_example:/app/data_example
@@ -47,6 +53,8 @@ services:
       - ../DovSG/setup.py:/app/setup.py
       - ../DovSG/ace:/app/ace
       - ../DovSG/third_party:/app/third_party
+      # X11 forwarding
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /app
     depends_on:
       - droid-slam

@@ -27,7 +27,19 @@ RUN apt-get update && apt-get install -y \
     libusb-1.0-0 \
     libusb-1.0-0-dev \
     ninja-build \
+    # X11 GUI support for local visualization
+    x11-apps \
+    libgl1-mesa-glx \
+    libgl1-mesa-dri \
+    libglu1-mesa \
+    x11-xserver-utils \
+    xauth \
+    imagemagick \
+    eog \
     && rm -rf /var/lib/apt/lists/*
+
+# Environment for X11 forwarding
+ENV QT_X11_NO_MITSHM=1
 
 # Set up proper C++ compiler for CUDA extensions
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 && \
