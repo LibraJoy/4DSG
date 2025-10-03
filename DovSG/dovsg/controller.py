@@ -16,6 +16,7 @@ import threading
 import cv2
 import subprocess
 import torch
+import sys
 from pathlib import Path
 from tqdm import tqdm
 import os
@@ -941,7 +942,8 @@ class Controller():
 
     def get_lightglue_features(self):
         if self.lightglue_features_path.exists():
-            self.lightglue_features = torch.load(self.lightglue_features_path) 
+            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+            self.lightglue_features = torch.load(self.lightglue_features_path, map_location=device) 
         else:
             featurematch = RGBFeatureMatch()
             append_length = self.view_dataset.append_length_log[-1]

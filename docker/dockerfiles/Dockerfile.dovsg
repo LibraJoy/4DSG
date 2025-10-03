@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y \
     libusb-1.0-0-dev \
     ninja-build \
     # X11 GUI support for local visualization
+    graphviz \
     x11-apps \
     libgl1-mesa-glx \
     libgl1-mesa-dri \

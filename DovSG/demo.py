@@ -54,13 +54,13 @@ def main(args):
         press "V" to save view params
     """
     controller.show_instances(
-        controller.instance_objects, 
-        clip_vis=True, 
-        scene_graph=controller.instance_scene_graph, 
+        controller.instance_objects,
+        clip_vis=True,
+        scene_graph=controller.instance_scene_graph,
         show_background=True
     )
-    
-    if not args.scanning_room:
+
+    if not args.scanning_room and not args.skip_task_planning:
         tasks = controller.get_task_plan(description=args.task_description, change_level=args.task_scene_change_level)
         print(tasks)
         controller.run_tasks(tasks=tasks)
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--scanning_room', action='store_true', help='For hand camera to recorder scene.')
     parser.add_argument('--preprocess', action='store_true', help='preprocess scene.')
     parser.add_argument('--debug', action='store_true', help='For debug mode.')
+    parser.add_argument('--skip_task_planning', action='store_true', help='Skip task planning stage (no API key required).')
 
     parser.add_argument('--task_scene_change_level', type=str, default="Minor Adjustment", 
                         choices=["Minor Adjustment", "Positional Shift", "Appearance"], help='scene change level.')

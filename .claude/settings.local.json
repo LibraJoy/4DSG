@@ -7,7 +7,8 @@
       "Bash(docker compose exec:*)",
       "Bash(docker compose:*)",
       "Bash(timeout 10 docker compose exec dovsg conda run -n dovsg bash -c \"echo ''Testing shell''; sleep 2; echo ''Shell works''\")",
-      "Bash(./scripts/06_run_demo.sh:*)"
+      "Bash(./scripts/06_run_demo.sh:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []

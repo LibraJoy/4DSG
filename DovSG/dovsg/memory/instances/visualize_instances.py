@@ -49,12 +49,24 @@ def create_ball_mesh(center, radius, color=(0, 1, 0)):
 
 def get_background_indexes(instance_objects: MapObjectList, view_dataset: ViewDataset):
     print("get background indexes.")
-    all_instance_objects_indexes = np.concatenate(instance_objects.get_values("indexes"))
+
+    # Handle case where no objects were detected
+    indexes_list = instance_objects.get_values("indexes")
+    if len(indexes_list) == 0:
+        # If no objects detected, all indexes are background
+        all_instance_objects_indexes = np.array([])
+    else:
+        all_instance_objects_indexes = np.concatenate(indexes_list)
+
     # part-level indexes not be process, so below is not available
     # assert len(all_instance_objects_indexes) == len(np.unique(all_instance_objects_indexes))
     all_indexes = list(view_dataset.indexes_colors_mapping_dict.keys())
-    # all_instance_objects_indexes must been subset of all_indexes
-    assert len(np.intersect1d(all_indexes, all_instance_objects_indexes)) == len(np.unique(all_instance_objects_indexes))
+
+    # Only validate if we have objects
+    if len(all_instance_objects_indexes) > 0:
+        # all_instance_objects_indexes must been subset of all_indexes
+        assert len(np.intersect1d(all_indexes, all_instance_objects_indexes)) == len(np.unique(all_instance_objects_indexes))
+
     background_indexes = np.setdiff1d(all_indexes, all_instance_objects_indexes)
     return background_indexes
 
@@ -293,8 +305,17 @@ def vis_instances(
         if not clip_vis:
             print("CLIP model is not initialized.")
             return
-        
-        text_query = input("Enter your query: ")
+
+        if len(instance_objects) == 0:
+            print("No objects detected. Cannot perform CLIP similarity query.")
+            return
+
+        try:
+            text_query = input("Enter your query: ")
+        except EOFError:
+            print("Interactive input not available. Using default query: 'object'")
+            text_query = "object"
+
         text_queries = [text_query]
         text_query_ft = myclip.get_text_feature(text_queries)
         similarities = instance_objects.compute_similarities(text_query_ft).squeeze()
@@ -344,7 +365,7 @@ def vis_instances(
     vis.register_key_callback(ord("B"), toggle_bg_pcd)
     vis.register_key_callback(ord("C"), color_by_class)
     vis.register_key_callback(ord("R"), color_by_rgb)
-    vis.register_key_callback(ord("F"), color_by_clip_sim)
+    vis.register_key_callback(ord("A"), color_by_clip_sim)
     vis.register_key_callback(ord("G"), toggle_scene_graph)
     vis.register_key_callback(ord("I"), color_by_instance)
     vis.register_key_callback(ord("O"), toggle_bbox)

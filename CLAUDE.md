@@ -33,7 +33,8 @@ When received user's require about editing code, follow these principles:
 ### Keep the content generate style serious and concise
 - Never generate content with icons or emoticons
 
-### 
+### Persistent fix problem
+- If some problem have solution can be persistent fix, apply it instead of temporaryly fix.
 
 ## Plan & Review
 

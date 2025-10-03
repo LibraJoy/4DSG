@@ -156,11 +156,18 @@ class InstanceProcess:
         objects = self.change_objects(objects)
         
 
-        objects_original_indexes = np.unique(self.objects_original_indexes) 
-        objects_indexes = np.concatenate(objects.get_values("indexes"))
-        # when at step 1, bottom is true
-        # assert len(np.intersect1d(objects_original_indexes, objects_indexes)) == len(objects_indexes)
-        object_filter_indexes = np.setdiff1d(objects_original_indexes, objects_indexes)
+        objects_original_indexes = np.unique(self.objects_original_indexes)
+
+        # Handle case where no objects were detected
+        indexes_list = objects.get_values("indexes")
+        if len(indexes_list) == 0:
+            objects_indexes = np.array([])
+            object_filter_indexes = objects_original_indexes
+        else:
+            objects_indexes = np.concatenate(indexes_list)
+            # when at step 1, bottom is true
+            # assert len(np.intersect1d(objects_original_indexes, objects_indexes)) == len(objects_indexes)
+            object_filter_indexes = np.setdiff1d(objects_original_indexes, objects_indexes)
 
         # instance-level objects
         return objects, object_filter_indexes  
