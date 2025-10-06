@@ -48,20 +48,21 @@ sudo usermod -aG docker $USER
 
 ```bash
 # Clone this repository
-git clone <your-repo-url> 4DSG
-cd 4DSG
+git clone https://github.com/BJHYZJ/4DSG.git
+cd 4DSG/docker
 
-# Run setup
-cd docker/
-./scripts/setup
+# Download dependencies
+./scripts/download_third_party.sh  # Third-party code
+./scripts/download                  # Model checkpoints
 
-# Download sample data manually from Google Drive
-# https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x?usp=sharing
-# Extract to: DovSG/data_example/room1/
-
-# Test installation
-./scripts/demo
+# Build and start
+./scripts/docker_build.sh
+./scripts/docker_run.sh
 ```
+
+For complete setup instructions, see **[docker/README.md](docker/README.md)**.
+
+For testing and demos, see **[docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md)**.
 
 ## Development Workflow
 
@@ -70,15 +71,14 @@ All development operations use streamlined scripts in `docker/scripts/`:
 
 ```bash
 # Environment management
-./scripts/setup          # Complete environment setup
-./scripts/build          # Build containers
-./scripts/start          # Start containers
-./scripts/start --stop   # Stop containers
-./scripts/start --test   # Test functionality
+./scripts/docker_build.sh    # Build containers
+./scripts/docker_run.sh       # Start containers
+./scripts/docker_run.sh --shell  # Interactive shell
+./scripts/docker_clean.sh     # Cleanup containers/volumes
 
-# Development
-./scripts/demo           # Interactive demo runner
-./scripts/download       # Download model checkpoints
+# Data downloads
+./scripts/download_third_party.sh  # Clone third-party code
+./scripts/download                 # Download checkpoints
 ```
 
 ### Interactive Development
