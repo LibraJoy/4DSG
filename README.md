@@ -21,94 +21,40 @@ A streamlined Docker-based environment for **DovSG (Dense Open-Vocabulary 3D Sce
 └── shared_data/               # Runtime data sharing
 ```
 
+## What is DovSG?
+
+DovSG constructs dynamic 3D scene graphs for robot navigation and manipulation. The pipeline:
+1. **Data Collection** → RGB-D images + camera poses (via DROID-SLAM)
+2. **3DSG Construction** → Object detection, segmentation, spatial relationships
+3. **Interactive Visualization** → Open3D viewer with scene graph overlay
+
 ## Quick Start
 
-### Prerequisites
-Install Docker, Docker Compose, and NVIDIA Container Toolkit:
-
 ```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Install NVIDIA Container Toolkit for GPU support
-curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
-curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
-sudo nvidia-ctk runtime configure --runtime=docker
-sudo systemctl restart docker
-
-# Add user to docker group
-sudo usermod -aG docker $USER
-```
-
-**Important**: Log out and log back in after adding yourself to the docker group.
-
-### Installation
-
-```bash
-# Clone this repository
 git clone https://github.com/BJHYZJ/4DSG.git
 cd 4DSG/docker
 
-# Download dependencies
-./scripts/download_third_party.sh  # Third-party code
-./scripts/download                  # Model checkpoints
-
-# Build and start
-./scripts/docker_build.sh
-./scripts/docker_run.sh
+# One-command setup (see docker/README.md for prerequisites)
+./scripts/download_third_party.sh && ./scripts/download && \
+./scripts/docker_build.sh && ./scripts/docker_run.sh
 ```
 
-For complete setup instructions, see **[docker/README.md](docker/README.md)**.
-
-For testing and demos, see **[docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md)**.
+**Complete Guides**:
+- **Setup & Prerequisites** → [docker/README.md](docker/README.md)
+- **Testing & Demos** → [docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md)
 
 ## Development Workflow
 
-### Script Commands
-All development operations use streamlined scripts in `docker/scripts/`:
+**Management Scripts** (`docker/scripts/`):
+- `docker_build.sh` - Build containers
+- `docker_run.sh` - Start containers (`--shell` for interactive)
+- `docker_clean.sh` - Cleanup containers/volumes
+- `download_third_party.sh`, `download` - Data downloads
 
-```bash
-# Environment management
-./scripts/docker_build.sh    # Build containers
-./scripts/docker_run.sh       # Start containers
-./scripts/docker_run.sh --shell  # Interactive shell
-./scripts/docker_clean.sh     # Cleanup containers/volumes
-
-# Data downloads
-./scripts/download_third_party.sh  # Clone third-party code
-./scripts/download                 # Download checkpoints
-```
-
-### Interactive Development
-The environment supports live code editing and debugging:
-
-```bash
-# Access container shells for development
-docker compose exec dovsg bash
-docker compose exec droid-slam bash
-
-# Run specific demos
-docker compose exec dovsg conda run -n dovsg python demo.py \
-    --tags "room1" \
-    --preprocess \
-    --debug \
-    --task_description "Move the red pepper to the plate"
-```
-
-### Code Changes
-```bash
-# 1. Edit DovSG code directly (changes reflect immediately)
-vim DovSG/dovsg/your_module.py
-
-# 2. Test changes in containers
-./scripts/demo
-
-# 3. Commit changes
-git add DovSG/
-git commit -m "Update DovSG implementation"
-```
+**Live Code Editing**:
+- Edit `DovSG/` files on host → changes reflect immediately in containers
+- Interactive shell: `./scripts/docker_run.sh --shell`
+- See [docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md) for demo commands
 
 ## Data Requirements
 
@@ -146,45 +92,21 @@ If you have an existing DovSG installation:
 cp -r /path/to/original/DovSG /backup/
 
 # Clone this repository
-git clone <your-repo-url> 4DSG-new
+git clone https://github.com/BJHYZJ/4DSG.git
+cd 4DSG
 
 # Copy existing data if available
-cp -r /backup/DovSG/checkpoints/ 4DSG-new/DovSG/ 2>/dev/null || true
-cp -r /backup/DovSG/data_example/ 4DSG-new/DovSG/ 2>/dev/null || true
+cp -r /backup/DovSG/checkpoints/ DovSG/ 2>/dev/null || true
+cp -r /backup/DovSG/data_example/ DovSG/ 2>/dev/null || true
 
 # Setup new environment
-cd 4DSG-new/docker/
-./scripts/setup
+cd docker/
+./scripts/docker_build.sh && ./scripts/docker_run.sh
 ```
 
 ## Troubleshooting
 
-### Common Issues
-
-**Permission Denied Errors**:
-```bash
-# Check docker group membership
-groups | grep docker
-
-# Add user to docker group if needed
-sudo usermod -aG docker $USER
-# Log out and log back in
-```
-
-**GPU Not Working**:
-```bash
-# Test GPU access
-./scripts/start --test
-
-# If GPU test fails, reinstall NVIDIA Container Toolkit (see Prerequisites)
-```
-
-**Build Failures**:
-```bash
-# Clean rebuild (only affects this project)
-./scripts/start --stop
-docker compose build --no-cache
-```
+See [docker/README.md](docker/README.md#troubleshooting) for setup issues and [docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md#troubleshooting-tests) for runtime issues.
 
 ## License
 
