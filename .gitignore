@@ -6,8 +6,8 @@ DovSG/data_example/
 DovSG/third_party/**
 
 # EXCEPT: Local patches tracked for reproducibility
-!DovSG/third_party/segment-anything-2/
-!DovSG/third_party/segment-anything-2/setup.py
+!DovSG/third_party/sam2/
+!DovSG/third_party/sam2/setup.py
 !DovSG/third_party/DROID-SLAM/
 !DovSG/third_party/DROID-SLAM/droid_slam/
 !DovSG/third_party/DROID-SLAM/droid_slam/trajectory_filler.py
