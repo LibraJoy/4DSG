@@ -1,7 +1,16 @@
 # DovSG Large Data Directories (can be downloaded via commands)
 DovSG/checkpoints/
 DovSG/data_example/
-DovSG/third_party/
+
+# Third-party code (downloaded by scripts/download_third_party.sh)
+DovSG/third_party/**
+
+# EXCEPT: Local patches tracked for reproducibility
+!DovSG/third_party/segment-anything-2/
+!DovSG/third_party/segment-anything-2/setup.py
+!DovSG/third_party/DROID-SLAM/
+!DovSG/third_party/DROID-SLAM/droid_slam/
+!DovSG/third_party/DROID-SLAM/droid_slam/trajectory_filler.py
 
 # DovSG Large Binary Files
 DovSG/*.so
