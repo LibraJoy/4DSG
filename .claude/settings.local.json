@@ -8,7 +8,9 @@
       "Bash(docker compose:*)",
       "Bash(timeout 10 docker compose exec dovsg conda run -n dovsg bash -c \"echo ''Testing shell''; sleep 2; echo ''Shell works''\")",
       "Bash(./scripts/06_run_demo.sh:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(git grep:*)",
+      "Bash(git -C /home/cerlab/4DSG status --porcelain DovSG/third_party/)"
     ],
     "deny": [],
     "ask": []

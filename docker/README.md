@@ -46,8 +46,13 @@ docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
 
 #### X11 Forwarding (for GUI visualization)
 ```bash
-# Allow Docker containers to access X server
+# For X11 systems (traditional Linux)
 xhost +local:docker
+
+# For Wayland systems (Ubuntu 22.04+, newer desktops)
+# If above fails, also try:
+export WAYLAND_DISPLAY=""  # Force XWayland
+xhost +SI:localuser:root
 
 # Add to ~/.bashrc for persistence:
 echo "xhost +local:docker > /dev/null 2>&1" >> ~/.bashrc

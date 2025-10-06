@@ -62,7 +62,7 @@ DROID-SLAM Poses → View Dataset → Semantic Memory → Instance Segmentation 
 - G: Scene graph edges, I: Instance colors, O: Bounding boxes, V: Save view
 
 ### Artifacts Created
-- `.claude/tasks/3dsg_only_plan.md` - Complete execution documentation
+- `docker/_archive/3dsg_only_plan.md` - **ARCHIVED** (content merged into MANUAL_VERIFICATION.md)
 - `docker/scripts/run_3dsg_only.sh` - Streamlined execution script
 
 ### Required User Commands
@@ -311,3 +311,41 @@ docker exec dovsg-main bash -c "source /opt/conda/etc/profile.d/conda.sh && cond
 - 3DSG-only pipeline: 5-10 minutes
 - Interactive viewer: Real-time response
 - GPU memory: ~5-7GB VRAM
+---
+
+## 2025-10-06: Docker Documentation Consolidation
+
+### Goal
+Consolidate Docker documentation to exactly two authoritative files: `docker/README.md` (setup) and `docker/MANUAL_VERIFICATION.md` (testing/demos).
+
+### Content Migrated
+
+**From `docker/3dsg_only_plan.md` → `docker/MANUAL_VERIFICATION.md`:**
+- Interactive 3DSG Viewer Controls (8 keyboard + mouse controls) → New section after Test 3.1
+- 3DSG-Only Pipeline (skip preprocessing workflow) → New Test 3.2
+- Artifact directory structure with annotations → Test 3.1 preamble
+- Expected GUI windows (3 specific windows) → Test 3.1 expected outputs
+- Processing times and GPU memory usage → Enhanced Performance Benchmarks
+- Common failure modes (TypeError device, permissions, missing artifacts) → Troubleshooting Tests
+
+**From `docker/COMPLETE_X11_GUI_TESTING.md` → Docs:**
+- Wayland support instructions (`export WAYLAND_DISPLAY=""`, `xhost +SI:localuser:root`) → `docker/README.md` X11 section
+- Basic X11 test (`xeyes`) → MANUAL_VERIFICATION Test 1.4
+- OpenGL validation (`glxinfo`, `glxgears`) → MANUAL_VERIFICATION Test 1.5
+- Open3D coordinate frame test → MANUAL_VERIFICATION Test 1.6
+- Comprehensive X11/Wayland troubleshooting → MANUAL_VERIFICATION Troubleshooting section
+- Qt plugin errors, blank windows, keyboard focus issues → MANUAL_VERIFICATION Troubleshooting
+
+### Files Archived
+- `docker/3dsg_only_plan.md` → `docker/_archive/3dsg_only_plan.md` (with deprecation notice)
+- `docker/COMPLETE_X11_GUI_TESTING.md` → `docker/_archive/COMPLETE_X11_GUI_TESTING.md` (with deprecation notice)
+
+### Link Updates
+- `.claude/worklog.md` line 65: Updated reference to archived location
+- Both archived files: Added deprecation headers pointing to new canonical sections
+
+### Result
+- **Exactly 2 authoritative docs** in `/docker`: README.md (setup) + MANUAL_VERIFICATION.md (testing)
+- **Zero duplication** between docs (clear separation: setup vs testing)
+- **All unique content preserved**: Interactive controls, 3DSG workflow, comprehensive troubleshooting
+- **Legacy docs archived** with clear pointers to new locations

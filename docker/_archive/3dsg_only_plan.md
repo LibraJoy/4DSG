@@ -1,5 +1,10 @@
 # 3DSG-Only Execution Plan
 
+> **DEPRECATED**: This document has been archived. Content has been merged into the authoritative documentation:
+> - Setup instructions → [../README.md](../README.md)
+> - 3DSG-only workflow → [../MANUAL_VERIFICATION.md](../MANUAL_VERIFICATION.md#test-32-3dsg-only-pipeline-skip-preprocessing)
+> - Interactive viewer controls → [../MANUAL_VERIFICATION.md](../MANUAL_VERIFICATION.md#interactive-3dsg-viewer-controls)
+
 **Document Version**: 1.0
 **Last Updated**: January 2025
 **Purpose**: Streamlined execution of DovSG 3D Scene Graph construction and visualization

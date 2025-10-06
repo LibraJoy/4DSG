@@ -1,5 +1,11 @@
 # Complete X11 GUI Testing Guide for DovSG Docker Environment
 
+> **DEPRECATED**: This document has been archived. Content has been merged into the authoritative documentation:
+> - X11/Wayland setup → [../README.md](../README.md#x11-forwarding-for-gui-visualization)
+> - GUI tests → [../MANUAL_VERIFICATION.md](../MANUAL_VERIFICATION.md#1-environment-tests)
+> - OpenGL/Open3D tests → [../MANUAL_VERIFICATION.md](../MANUAL_VERIFICATION.md#test-15-opengl-support)
+> - X11 troubleshooting → [../MANUAL_VERIFICATION.md](../MANUAL_VERIFICATION.md#troubleshooting-tests)
+
 This guide provides comprehensive step-by-step instructions to test the new X11 GUI capabilities integrated with the existing DovSG Docker environment.
 
 ## Phase 0: Build and Setup (Required First)

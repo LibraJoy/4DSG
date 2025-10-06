@@ -76,17 +76,37 @@ print('✓ All third-party packages importable')
 
 #### Test 1.4: X11 Display (GUI test)
 ```bash
+# Basic X11 test
+docker exec -it dovsg-main bash -c "echo \$DISPLAY && xeyes"
+```
+
+**Expected**: `xeyes` window appears (eyes follow mouse cursor)
+
+#### Test 1.5: OpenGL Support
+```bash
+# Test OpenGL direct rendering
+docker exec -it dovsg-main glxinfo | grep "direct rendering"
+
+# Test with simple OpenGL demo
+docker exec -it dovsg-main glxgears
+```
+
+**Expected**:
+- "direct rendering: Yes"
+- Rotating gears window with FPS counter
+- Close with Ctrl+C
+
+#### Test 1.6: Open3D GUI
+```bash
 docker compose exec dovsg conda run -n dovsg python -c "
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-plt.plot([1, 2, 3], [1, 4, 9])
-plt.title('X11 Test')
-plt.show()
+import open3d as o3d
+print('Testing Open3D GUI...')
+mesh = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1.0)
+o3d.visualization.draw_geometries([mesh])
 "
 ```
 
-**Expected**: A matplotlib window appears on host desktop
+**Expected**: 3D coordinate frame window (interactive: drag to rotate, wheel to zoom)
 
 ### 2. DROID-SLAM Tests
 
@@ -126,6 +146,17 @@ docker compose exec dovsg conda run -n dovsg python dovsg/scripts/pose_estimatio
 - Example data downloaded
 - All checkpoints downloaded
 
+**Artifact Structure** (created/required):
+```
+data_example/room1/
+├── poses_droidslam/        # Camera poses (created by --preprocess)
+├── memory/                 # View dataset cache (created)
+├── ace/                    # ACE relocalization model (created)
+├── semantic_memory/        # Object detection results (created)
+├── instances/              # Instance segmentation (created)
+└── instance_scene_graph.pkl # 3DSG data structure (created)
+```
+
 ```bash
 docker compose exec dovsg conda run -n dovsg python demo.py \
     --tags "room1" \
@@ -134,15 +165,74 @@ docker compose exec dovsg conda run -n dovsg python demo.py \
     --task_description "Find the red mug on the table"
 ```
 
-**Expected**:
-- Preprocessing: pose estimation, object detection, segmentation
-- Scene graph construction
+**Expected GUI Windows** (during execution):
+1. DROID-SLAM point cloud visualization
+2. View dataset point cloud
+3. Interactive 3DSG viewer (1280x720) - final output
+
+**Expected Terminal Output**:
+- Real-time logging (not buffered)
+- Preprocessing steps: pose estimation, object detection, segmentation
+- Scene graph construction progress
 - Task planning output
-- Visualizations saved to `data_example/room1/results/`
 
-**Approximate runtime**: 10-20 minutes
+**Approximate runtime**: 10-20 minutes (first run); 5-10 min (subsequent with cached artifacts)
 
-#### Test 3.2: Visualization Only
+**GPU Memory**: ~5-7GB VRAM used during execution
+
+#### Interactive 3DSG Viewer Controls
+
+When the main 3DSG viewer window appears (final step of Test 3.1):
+
+**Keyboard Controls**:
+- **B** - Toggle background point cloud visibility
+- **C** - Color objects by semantic class (red=objects, green=surfaces)
+- **R** - Color objects by RGB appearance (natural colors)
+- **F** - Color by CLIP feature similarity
+- **G** - Toggle scene graph relationship lines (spatial edges between objects)
+- **I** - Color by instance ID (unique color per detected object)
+- **O** - Toggle 3D bounding boxes around objects
+- **V** - Save current view parameters (camera position, zoom)
+
+**Mouse Controls**:
+- **Left drag** - Rotate camera view
+- **Right drag** - Pan camera position
+- **Scroll wheel** - Zoom in/out
+
+**Testing Procedure**:
+1. Wait for 3DSG viewer window to appear
+2. Click on window to ensure focus
+3. Test each keyboard control (press keys while focused)
+4. Verify visual changes occur for each key
+5. Test mouse controls (rotation, pan, zoom)
+6. All interactions should be smooth and responsive
+
+#### Test 3.2: 3DSG-Only Pipeline (Skip Preprocessing)
+
+**Prerequisites**: Test 3.1 must be run first to generate required artifacts
+
+**Purpose**: Fast execution of 3DSG construction without re-running heavy preprocessing
+
+```bash
+# Option 1: Using dedicated script (if available)
+./scripts/run_3dsg_only.sh room1
+
+# Option 2: Direct command (skips --preprocess)
+docker compose exec dovsg conda run -n dovsg python demo.py --tags room1
+```
+
+**Expected**:
+- Skips pose estimation and preprocessing steps
+- Uses cached artifacts from `data_example/room1/`
+- Runs semantic memory, instance segmentation, and 3DSG construction
+- Opens interactive 3DSG viewer
+- **Runtime**: 5-10 minutes (vs 10-20 with --preprocess)
+
+**Common Errors**:
+- `FileNotFoundError: poses_droidslam/` → Run Test 3.1 with `--preprocess` first
+- `FileNotFoundError: memory/` → Missing preprocessed view dataset
+
+#### Test 3.3: Visualization Only
 ```bash
 docker compose exec dovsg conda run -n dovsg python dovsg/scripts/show_pointcloud.py \
     --tags "room1" \
@@ -151,7 +241,7 @@ docker compose exec dovsg conda run -n dovsg python dovsg/scripts/show_pointclou
 
 **Expected**: Open3D window showing 3D point cloud with objects
 
-#### Test 3.3: Scene Graph Query
+#### Test 3.4: Scene Graph Query
 ```bash
 docker compose exec dovsg conda run -n dovsg python demo.py \
     --tags "room1" \
@@ -243,6 +333,30 @@ docker compose exec dovsg conda run -n dovsg conda list | grep XXX
 ./scripts/download
 ```
 
+### "TypeError: unexpected keyword argument 'device'"
+**Cause**: MyGroundingDINOSAM2 constructor missing device parameter
+**Fix**:
+```bash
+# Already fixed in current codebase
+# If issue persists, check: DovSG/dovsg/perception/models/mygroundingdinosam2.py
+# Ensure constructor has: device="cuda" parameter
+```
+
+### "Permission denied" editing files
+**Cause**: Container files owned by root
+**Fix**:
+```bash
+sudo chown -R $USER:$USER /home/$USER/4DSG/DovSG/
+```
+
+### "Missing artifacts (poses_droidslam, memory)"
+**Cause**: Preprocessing not run or artifacts not generated
+**Fix**:
+```bash
+# Run full preprocessing first
+docker compose exec dovsg conda run -n dovsg python demo.py --tags room1 --preprocess
+```
+
 ### Open3D window doesn't appear
 **Cause**: X11 forwarding not working
 **Fix**:
@@ -254,6 +368,59 @@ echo $DISPLAY  # Should show :0 or similar
 # Verify in container:
 docker compose exec dovsg bash -c 'echo $DISPLAY'
 # Should match host DISPLAY value
+```
+
+### "No protocol specified" or "authorization required" (Wayland)
+**Cause**: Wayland display server not allowing X11 forwarding
+**Fix**:
+```bash
+# Force XWayland
+export WAYLAND_DISPLAY=""
+xhost +SI:localuser:root
+
+# Or temporarily disable access control:
+xhost +
+```
+
+### GUI windows appear but are blank/corrupted
+**Cause**: Software rendering instead of GPU acceleration
+**Fix**:
+```bash
+# Check graphics drivers
+docker exec -it dovsg-main glxinfo | grep "OpenGL renderer"
+# Should show your GPU, not "llvmpipe" or "software"
+
+# Test with simple graphics
+docker exec -it dovsg-main xlogo
+```
+
+### "Qt platform plugin" errors
+**Cause**: Qt X11 shared memory issues
+**Fix**:
+```bash
+# Already set in Dockerfile: QT_X11_NO_MITSHM=1
+# If persists, test manually:
+docker exec -it dovsg-main bash -c "export QT_X11_NO_MITSHM=1 && python your_script.py"
+```
+
+### Open3D windows don't respond to keyboard
+**Cause**: Window not focused
+**Fix**:
+1. Click on the Open3D window to ensure focus
+2. Try pressing keys with window active
+3. Verify keyboard input is working:
+```bash
+docker exec -it dovsg-main conda run -n dovsg python -c "
+import open3d as o3d
+vis = o3d.visualization.VisualizerWithKeyCallback()
+vis.create_window()
+print('Press keys for testing (Q to quit)')
+def key_callback(vis):
+    print('Key pressed!')
+    return False
+vis.register_key_callback(ord('Q'), key_callback)
+vis.run()
+"
 ```
 
 ## Performance Benchmarks
