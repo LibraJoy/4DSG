@@ -58,6 +58,8 @@ xhost +SI:localuser:root
 echo "xhost +local:docker > /dev/null 2>&1" >> ~/.bashrc
 ```
 
+`./scripts/docker_run.sh` automatically runs `xhost +local:docker` before starting the containers, so you typically only need the manual command when managing services directly with `docker compose`.
+
 ## Quick Start
 
 ### 1. Clone Repository
@@ -98,7 +100,7 @@ See [MANUAL_VERIFICATION.md](MANUAL_VERIFICATION.md) for complete testing instru
 
 Quick test:
 ```bash
-docker compose exec dovsg conda run -n dovsg python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
+docker compose exec dovsg python -c "import torch; print(f'PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
 ```
 
 Expected output:

@@ -36,7 +36,7 @@ check_artifacts() {
     if [ $missing -eq 1 ]; then
         echo ""
         echo "Missing required artifacts. Run full preprocessing first:"
-        echo "  docker exec dovsg-main conda run -n dovsg python demo.py --tags $TAGS --preprocess"
+        echo "  docker compose exec dovsg python -u demo.py --tags ${TAGS} --preprocess --skip_task_planning"
         exit 1
     fi
 
@@ -85,6 +85,23 @@ def main():
     print("Processing instances...")
     controller.get_instances()
 
+    if len(controller.instance_objects) == 0:
+        print("⚠️  No instances detected in cache. Rebuilding instance objects...")
+        try:
+            if controller.instance_objects_path.exists():
+                controller.instance_objects_path.unlink()
+        except OSError as exc:
+            print(f"Warning: failed to remove cached instances ({exc}); continuing with rebuild attempt.")
+        controller.instance_objects = None
+        controller.get_instances()
+
+    if len(controller.instance_objects) == 0:
+        raise SystemExit(
+            "❌ No instances found in cached memory data.\n"
+            "   Re-run preprocessing:\n"
+            "   docker compose exec dovsg python -u demo.py --tags {} --preprocess --debug --skip_task_planning".format(tags)
+        )
+
     print("Constructing 3D scene graph...")
     controller.get_instance_scene_graph()
 
@@ -92,7 +109,7 @@ def main():
     controller.get_lightglue_features()
 
     print("Opening interactive 3DSG viewer...")
-    print("Controls: B=background, C=class colors, R=RGB, F=CLIP, G=scene graph, I=instances, O=bboxes, V=save view")
+    print("Controls: B=background, C=class colors, R=RGB, A=CLIP, G=scene graph, I=instances, O=bboxes, V=save view")
 
     controller.show_instances(
         controller.instance_objects,
@@ -107,7 +124,7 @@ EOF
 
     # Copy script to container and run
     docker cp /tmp/3dsg_only.py dovsg-main:/app/
-    docker exec dovsg-main conda run -n dovsg python /app/3dsg_only.py "$TAGS"
+    docker exec dovsg-main python -u /app/3dsg_only.py "$TAGS"
 
     # Cleanup
     rm -f /tmp/3dsg_only.py
@@ -137,13 +154,13 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo ""
     echo "Prerequisites:"
     echo "  - Container running: docker-compose up -d"
-    echo "  - Preprocessed data: docker exec dovsg-main conda run -n dovsg python demo.py --tags TAGS --preprocess"
+    echo "  - Preprocessed data: docker compose exec dovsg python -u demo.py --tags TAGS --preprocess --skip_task_planning"
     echo ""
     echo "Interactive viewer controls:"
     echo "  B - Toggle background point cloud"
     echo "  C - Color by semantic class"
     echo "  R - Color by RGB appearance"
-    echo "  F - Color by CLIP similarity"
+    echo "  A - Color by CLIP similarity"
     echo "  G - Toggle scene graph relationships"
     echo "  I - Color by instance ID"
     echo "  O - Toggle bounding boxes"

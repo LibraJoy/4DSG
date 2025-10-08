@@ -220,7 +220,7 @@ docker exec dovsg-main find /app/data_example/room1/memory -name "scene_graph*" 
 
 ### Changes Made
 
-#### Fix 1: CLIP Query Key Remapping (F → Q)
+#### Fix 1: CLIP Query Key Remapping (F → A)
 **File**: `/home/cerlab/4DSG/DovSG/dovsg/memory/instances/visualize_instances.py`
 **Lines 309-313**: Added try-except for EOFError handling
 ```diff
@@ -239,24 +239,19 @@ docker exec dovsg-main find /app/data_example/room1/memory -name "scene_graph*" 
      text_queries = [text_query]
 ```
 
-**Line 364**: Changed key mapping from 'F' to 'Q'
+**Line 364**: Changed key mapping from 'F' to 'A'
 ```diff
  vis.register_key_callback(ord("B"), toggle_bg_pcd)
  vis.register_key_callback(ord("C"), color_by_class)
  vis.register_key_callback(ord("R"), color_by_rgb)
 -vis.register_key_callback(ord("F"), color_by_clip_sim)
-+vis.register_key_callback(ord("Q"), color_by_clip_sim)
++vis.register_key_callback(ord("A"), color_by_clip_sim)
  vis.register_key_callback(ord("G"), toggle_scene_graph)
  vis.register_key_callback(ord("I"), color_by_instance)
  vis.register_key_callback(ord("O"), toggle_bbox)
  vis.register_key_callback(ord("V"), save_view_params)
 ```
 
-**Rationale**:
-- 'Q' is mnemonic: **Q**uery for CLIP similarity search
-- No conflicts: 'Q' not used by Open3D defaults or other DovSG controls
-- Safe in Docker: Won't auto-trigger in non-interactive mode
-- Fallback handling: Default query "object" if input unavailable
 
 #### Fix 2: Skip Task Planning Flag
 **File**: `/home/cerlab/4DSG/DovSG/demo.py`
@@ -281,7 +276,7 @@ docker exec dovsg-main find /app/data_example/room1/memory -name "scene_graph*" 
 - **B**: Background toggle
 - **C**: Class colors
 - **R**: RGB colors
-- **Q**: CLIP similarity query (was 'F')
+- **A**: CLIP similarity query (was 'F')
 - **G**: Scene graph edges
 - **I**: Instance colors
 - **O**: Bounding boxes
@@ -296,7 +291,7 @@ docker exec dovsg-main bash -c "source /opt/conda/etc/profile.d/conda.sh && cond
 
 ### Expected Behavior After Fixes
 1. ✅ **No EOFError crash** - Try-except handles non-interactive input gracefully
-2. ✅ **'Q' key works** - CLIP query with default fallback
+2. ✅ **'A' key works** - CLIP query with default fallback
 3. ✅ **No OpenAI API error** - Task planning skipped when flag set
 4. ✅ **3DSG generation unaffected** - CLIP visualization is separate from scene graph construction
 5. ✅ **Interactive controls work** - All 8 keyboard shortcuts functional
@@ -304,7 +299,7 @@ docker exec dovsg-main bash -c "source /opt/conda/etc/profile.d/conda.sh && cond
 ### CLIP Role Clarification (from DovSG paper Section III.B)
 - **CLIP for 3DSG generation** (ESSENTIAL): Visual and text features stored in scene graph nodes, used for multi-view object association
 - **CLIP for visualization** (OPTIONAL): Interactive querying feature controlled by `clip_vis=True` parameter
-- Changing 'F'→'Q' and adding error handling **does not affect 3DSG generation**
+- Changing 'F'→'A' and adding error handling **does not affect 3DSG generation**
 
 ### Performance Validation
 - Full preprocessing: 15-30 minutes
@@ -349,3 +344,108 @@ Consolidate Docker documentation to exactly two authoritative files: `docker/REA
 - **Zero duplication** between docs (clear separation: setup vs testing)
 - **All unique content preserved**: Interactive controls, 3DSG workflow, comprehensive troubleshooting
 - **Legacy docs archived** with clear pointers to new locations
+
+---
+
+## 2025-10-06: Top-Level README Streamlining
+
+### Goal
+Align top-level README.md with consolidated Docker documentation structure, eliminate redundancy.
+
+### Changes Made
+
+**Removed Redundancy**:
+- Prerequisites section (26 lines) → Linked to docker/README.md
+- Verbose script commands section → Replaced with concise 4-script bullet list
+- Code changes section referencing `./scripts/demo` → Linked to MANUAL_VERIFICATION.md
+- Migration section referencing `./scripts/setup` → Updated to `docker_build.sh`
+- Entire troubleshooting section (24 lines) → Linked to docker/README.md and MANUAL_VERIFICATION.md
+
+**Added Content**:
+- "What is DovSG?" section with high-level pipeline (data → 3DSG → viz)
+- One-command quick start (chained setup commands)
+- Clear navigation: "Complete Guides" section linking to docker/README.md and MANUAL_VERIFICATION.md
+
+**Stale References Removed**:
+- `./scripts/demo` (deleted script)
+- `./scripts/setup` (deleted script)
+- `./scripts/start --test` (deleted script)
+
+### Result
+- README reduced from 198 to 119 lines (-40% size reduction)
+- Zero duplication with docker/README.md and docker/MANUAL_VERIFICATION.md
+- Clear role separation: README (overview + quick links) vs docker/* (authoritative guides)
+- All commands and troubleshooting in single source of truth (docker docs)
+
+### Commit
+- `afecf4b` - "docs: streamline top-level README to align with consolidated Docker docs"
+
+## 2025-10-06 - Project Intro/Status Refresh
+
+### Changes
+- Created `.claude/reports/project_intro_status.md` consolidating the onboarding executive summary, decisions, and open issues.
+
+### Notes
+- Documentation-only update; no code or container changes.
+
+## 2025-10-06 - 3DSG Code Map
+
+### Changes
+- Authored `.claude/reports/3dsg_code_map.md` detailing entry points, dataflow, CLI mappings, viewer controls, and follow-up gaps for the 3DSG pipeline.
+
+### Notes
+- Read-only code inspection; no runtime commands executed.
+
+## 2025-10-06 - Skip Flag Alignment for 3DSG Launchers
+
+### Changes
+- Updated `docker/scripts/run_3dsg_only.sh` user guidance to include `--skip_task_planning` in preprocessing reminders.
+- Refreshed `docker/MANUAL_VERIFICATION.md` Test 3.1, Test 3.2, Test 5.1, and troubleshooting commands to pass `--skip_task_planning` for 3DSG-only runs and documented the expected skip message.
+
+### Validation Commands (not executed)
+1. `cd docker && ./scripts/docker_build.sh`
+2. `cd docker && ./scripts/docker_run.sh`
+3. `docker compose exec dovsg conda run -n dovsg python demo.py --tags room1 --preprocess --debug --skip_task_planning`
+4. `cd docker && ./scripts/run_3dsg_only.sh room1`
+
+### TODOs
+- Consider exposing a dedicated flag/CLI option to suppress CLIP input prompts in headless viewer sessions.
+
+## 2025-10-06 - X11 Helper, Log Buffering, and 3DSG Sanity Checks
+
+### Changes
+- Added automatic `xhost +local:docker` handling to `docker/scripts/docker_run.sh` and documented the behavior in `docker/README.md`.
+- Swapped all canonical `demo.py` invocations to the explicit `bash -lc 'source ... && conda activate dovsg && python -u /app/demo.py ...'` pattern in docs and helper scripts for consistent environments.
+- Hardened `docker/scripts/run_3dsg_only.sh` by running the embedded pipeline with `python -u`, correcting the CLIP hotkey to `A`, aborting early with guidance if cached instances are missing, and aligning error/help text with the canonical command.
+
+### Validation Commands (not executed)
+1. `cd docker && ./scripts/docker_run.sh`
+2. `docker compose exec dovsg bash -lc 'source /opt/conda/etc/profile.d/conda.sh && conda activate dovsg && python -u /app/demo.py --tags room1 --preprocess --debug --skip_task_planning'`
+3. `cd docker && ./scripts/run_3dsg_only.sh room1`
+
+### TODOs
+- Investigate providing a `--clip-no-input` flag to bypass interactive CLIP prompts during scripted viewer sessions.
+
+## 2025-10-07 - Short-Form Demo Invocation
+
+### Changes
+- Updated `docker/dockerfiles/Dockerfile.dovsg` to prepend the DovSG Conda environment to `PATH`, making `python` and related tools point to the project environment by default.
+- Simplified `docker/scripts/run_3dsg_only.sh` and associated documentation to use short-form commands (`docker compose exec dovsg python -u demo.py ...`) while retaining log streaming.
+- Added an “Open an interactive shell” section to `docker/MANUAL_VERIFICATION.md` and refreshed demo commands to reflect the shorter invocation; adjusted `docker/README.md` quick test accordingly.
+
+### Validation Commands (not executed)
+1. `docker compose exec dovsg python -c "import torch; print(torch.cuda.is_available())"`
+2. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning`
+3. `docker compose exec -it dovsg bash`
+
+### Notes
+- Short commands assumed rebuilt images (`./scripts/docker_build.sh`) so the updated PATH takes effect.
+
+## 2025-10-07 - 3DSG-Only Cache Recovery
+
+### Changes
+- Updated `docker/scripts/run_3dsg_only.sh` to remove stale `instance_objects.pkl` and rebuild the cache automatically when it exists but contains zero objects, reducing unnecessary failures.
+
+### Validation Commands (not executed)
+1. `cd docker && ./scripts/run_3dsg_only.sh room1`
+2. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning`  # fallback if rebuild still yields zero objects

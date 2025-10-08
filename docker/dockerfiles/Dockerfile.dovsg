@@ -192,6 +192,10 @@ RUN pip install -e .
 # This must be the VERY LAST step as multiple packages override transforms3d to incompatible versions
 RUN pip install --no-cache-dir --force-reinstall "numpy==1.23.0" "transforms3d==0.4.1"
 
+# Default to the dovsg environment for interactive sessions
+ENV CONDA_DEFAULT_ENV=dovsg
+ENV PATH="/opt/conda/envs/dovsg/bin:/opt/conda/bin:${PATH}"
+
 # Create directories
 RUN mkdir -p data_example checkpoints shared_data license
 
