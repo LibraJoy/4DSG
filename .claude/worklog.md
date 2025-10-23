@@ -477,7 +477,7 @@ Align top-level README.md with consolidated Docker documentation structure, elim
 1. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning --skip_ace --skip_lightglue`
 2. `docker compose exec dovsg python -u demo.py --tags room1 --skip_task_planning --skip_lightglue`
 
-## 2025-10-08 - Semantic Memory GPU OOM Mitigation
+## 2025-10-23 - Semantic Memory GPU OOM Mitigation
 
 ### Changes
 - Added `--semantic_device` flag in `DovSG/demo.py` (passed to `Controller.get_semantic_memory`) so RAM/GroundingDINO can run on CPU when GPU memory is tight.

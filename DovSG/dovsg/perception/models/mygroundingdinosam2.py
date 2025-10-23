@@ -119,13 +119,18 @@ class MyGroundingDINOSAM2():
         '''
         # annotate image with detections
         box_annotator = sv.BoxAnnotator(
-            color = color,
+            color=color,
+            thickness=2
+        )
+        label_annotator = sv.LabelAnnotator(
+            color=color,
+            text_color=sv.Color.WHITE,
             text_scale=0.3,
             text_thickness=1,
-            text_padding=2,
+            text_padding=2
         )
         mask_annotator = sv.MaskAnnotator(
-            color = color
+            color=color
         )
 
         if hasattr(detections, 'confidence') and hasattr(detections, 'class_id'):
@@ -151,5 +156,6 @@ class MyGroundingDINOSAM2():
         annotated_image = mask_annotator.annotate(scene=image.copy(), detections=detections)
         
         if draw_bbox:
-            annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+            annotated_image = box_annotator.annotate(scene=annotated_image, detections=detections)
+            annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
         return annotated_image, labels
