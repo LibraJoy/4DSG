@@ -38,7 +38,7 @@ docker exec dovsg-main bash -c "source /opt/conda/etc/profile.d/conda.sh && cond
       controller.show_pointcloud(is_visualize=True)          # Line 36
   ```
 
-- **[controller.py:182-193](../DovSG/dovsg/controller.py#L182-L193)** - `pose_estimation()` method
+- **[controller.py:182-193](../../DovSG/dovsg/controller.py#L182-L193)** - `pose_estimation()` method
   ```python
   def pose_estimation(self):
       process = subprocess.Popen([
@@ -51,14 +51,14 @@ docker exec dovsg-main bash -c "source /opt/conda/etc/profile.d/conda.sh && cond
       process.wait()
   ```
 
-- **[dovsg/scripts/pose_estimation.py](../DovSG/dovsg/scripts/pose_estimation.py)** - DROID-SLAM wrapper
+- **[dovsg/scripts/pose_estimation.py](../../DovSG/dovsg/scripts/pose_estimation.py)** - DROID-SLAM wrapper
   - Uses DROID-SLAM[31] to estimate camera poses from RGB-D sequence
   - Replaces depth prediction with actual sensor depth for metric scale
   - Outputs: `poses_droidslam/*.txt` (4×4 transformation matrices)
 
 #### 2.1.2 Coordinate Transformation (Paper III.A.2)
 
-**Method**: **[controller.py:225-320](../DovSG/dovsg/controller.py#L225-L320)** - `transform_pose_with_floor()`
+**Method**: **[controller.py:225-320](../../DovSG/dovsg/controller.py#L225-L320)** - `transform_pose_with_floor()`
 
 **Algorithm** (implements paper's coordinate transformation):
 
@@ -154,7 +154,7 @@ data_example/room1/
 
 #### 2.2.1 Entry Point
 
-**Code**: **[demo.py:39](../DovSG/demo.py#L39)** → **[controller.py:811-831](../DovSG/dovsg/controller.py#L811-L831)**
+**Code**: **[demo.py:39](../DovSG/demo.py#L39)** → **[controller.py:811-831](../../DovSG/dovsg/controller.py#L811-L831)**
 ```python
 def get_view_dataset(self):
     if self.view_dataset_path.exists():
@@ -173,7 +173,7 @@ def get_view_dataset(self):
 
 #### 2.2.2 ViewDataset Class Initialization
 
-**File**: **[view_dataset.py:50-91](../DovSG/dovsg/memory/view_dataset.py#L50-L91)**
+**File**: **[view_dataset.py:50-91](../../DovSG/dovsg/memory/view_dataset.py#L50-L91)**
 
 **Constructor**:
 ```python
@@ -198,7 +198,7 @@ class ViewDataset():
 
 #### 2.2.3 Data Loading Process
 
-**Method**: **[view_dataset.py:122-165](../DovSG/dovsg/memory/view_dataset.py#L122-L165)** - `load_data()`
+**Method**: **[view_dataset.py:122-165](../../DovSG/dovsg/memory/view_dataset.py#L122-L165)** - `load_data()`
 
 **Step 1**: Load RGB-D-Pose tuples
 ```python
@@ -246,7 +246,7 @@ self.append_length_log.append(len(self.images))
 
 #### 2.2.4 Voxelization
 
-**Method**: **[view_dataset.py:166-256](../DovSG/dovsg/memory/view_dataset.py#L166-L256)** - `calculate_all_global_voxel_indexes_and_colors()`
+**Method**: **[view_dataset.py:166-256](../../DovSG/dovsg/memory/view_dataset.py#L166-L256)** - `calculate_all_global_voxel_indexes_and_colors()`
 
 **Algorithm**:
 ```python
@@ -299,7 +299,7 @@ for i, gpoint in enumerate(self.global_points):
 
 #### 2.3.1 Entry Point
 
-**Code**: **[demo.py:40](../DovSG/demo.py#L40)** → **[controller.py:833-893](../DovSG/dovsg/controller.py#L833-L893)**
+**Code**: **[demo.py:40](../DovSG/demo.py#L40)** → **[controller.py:833-893](../../DovSG/dovsg/controller.py#L833-L893)**
 ```python
 def get_semantic_memory(self, device="cuda", visualize_results=True):
     if self.semantic_memory_dir.exists() and len(list(...)) == self.view_dataset.append_length_log[-1]:
@@ -326,7 +326,7 @@ def get_semantic_memory(self, device="cuda", visualize_results=True):
 
 #### 2.3.2 Semantic Processing Pipeline
 
-**File**: **[ram_groundingdino_sam2_clip_semantic_memory.py:92-137](../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L92-L137)**
+**File**: **[ram_groundingdino_sam2_clip_semantic_memory.py:92-137](../../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L92-L137)**
 
 **Method**: `semantic_process(image: np.ndarray)` - Implements paper Section III.B.1
 
@@ -458,7 +458,7 @@ return det_res, annotated_image, image_pil
 
 #### 2.4.1 Entry Point
 
-**Code**: **[demo.py:41](../DovSG/demo.py#L41)** → **[controller.py:895-919](../DovSG/dovsg/controller.py#L895-L919)**
+**Code**: **[demo.py:41](../DovSG/demo.py#L41)** → **[controller.py:895-919](../../DovSG/dovsg/controller.py#L895-L919)**
 ```python
 def get_instances(self):
     if self.instance_objects_path.exists():
@@ -482,7 +482,7 @@ def get_instances(self):
 
 #### 2.4.2 Instance Processing Pipeline
 
-**File**: **[instance_process.py:74-177](../DovSG/dovsg/memory/instances/instance_process.py#L74-L177)**
+**File**: **[instance_process.py:74-177](../../DovSG/dovsg/memory/instances/instance_process.py#L74-L177)**
 
 **Method**: `get_instances()` - Implements paper Section III.B.2 (Object Association) and III.B.3 (Object Fusion)
 
@@ -663,7 +663,7 @@ objects = self.filter_objects(objects, obj_min_detections=3)  # Min observation 
 
 #### 2.5.1 Entry Point
 
-**Code**: **[demo.py:42](../DovSG/demo.py#L42)** → **[controller.py:921-941](../DovSG/dovsg/controller.py#L921-L941)**
+**Code**: **[demo.py:42](../DovSG/demo.py#L42)** → **[controller.py:921-941](../../DovSG/dovsg/controller.py#L921-L941)**
 ```python
 def get_instance_scene_graph(self, is_visualize=True):
     if self.instance_scene_graph_path.exists():
@@ -687,7 +687,7 @@ def get_instance_scene_graph(self, is_visualize=True):
 
 #### 2.5.2 Scene Graph Construction Algorithm
 
-**File**: **[scene_graph_processer.py:310-554](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L310-L554)**
+**File**: **[scene_graph_processer.py:310-554](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L310-L554)**
 
 **Method**: `build_scene_graph()` - Implements paper Section III.C
 
@@ -857,7 +857,7 @@ for container_obj in instance_objects:
 
 #### 2.5.3 3D Scene Graph Data Model
 
-**ObjectNode Class** ([graph.py:5-28](../DovSG/dovsg/memory/scene_graph/graph.py#L5-L28)):
+**ObjectNode Class** ([graph.py:5-28](../../DovSG/dovsg/memory/scene_graph/graph.py#L5-L28)):
 ```python
 class ObjectNode:
     def __init__(self, parent, node_class, node_id, parent_relation=None, is_part=False):
@@ -869,7 +869,7 @@ class ObjectNode:
         self.is_part = is_part              # True for part-level objects
 ```
 
-**SceneGraph Class** ([graph.py:30-48](../DovSG/dovsg/memory/scene_graph/graph.py#L30-L48)):
+**SceneGraph Class** ([graph.py:30-48](../../DovSG/dovsg/memory/scene_graph/graph.py#L30-L48)):
 ```python
 class SceneGraph:
     def __init__(self, root_node: ObjectNode):
@@ -930,7 +930,7 @@ controller.show_instances(
 )
 ```
 
-**Implementation**: **[controller.py:1181-1196](../DovSG/dovsg/controller.py#L1181-L1196)**
+**Implementation**: **[controller.py:1181-1196](../../DovSG/dovsg/controller.py#L1181-L1196)**
 ```python
 def show_instances(self, instance_objects, show_background=False, scene_graph=None, clip_vis=False):
     from dovsg.memory.instances.visualize_instances import vis_instances
@@ -946,7 +946,7 @@ def show_instances(self, instance_objects, show_background=False, scene_graph=No
 
 #### 2.6.2 Open3D Viewer with Keyboard Controls
 
-**File**: **[visualize_instances.py:94-371](../DovSG/dovsg/memory/instances/visualize_instances.py#L94-L371)**
+**File**: **[visualize_instances.py:94-371](../../DovSG/dovsg/memory/instances/visualize_instances.py#L94-L371)**
 
 **Main Visualization Function**:
 ```python
@@ -1028,14 +1028,14 @@ def vis_instances(instance_objects, class_colors, view_dataset,
 
 | Key | Function | File Location | Description |
 |-----|----------|---------------|-------------|
-| **B** | `toggle_bg_pcd()` | [visualize_instances.py:256-265](../DovSG/dovsg/memory/instances/visualize_instances.py#L256-L265) | Toggle background point cloud visibility |
-| **C** | `color_by_class()` | [visualize_instances.py:268-280](../DovSG/dovsg/memory/instances/visualize_instances.py#L268-L280) | Color objects by semantic class |
-| **R** | `color_by_rgb()` | [visualize_instances.py:282-288](../DovSG/dovsg/memory/instances/visualize_instances.py#L282-L288) | Display original RGB colors |
-| **A** | `color_by_clip_sim()` | [visualize_instances.py:304-341](../DovSG/dovsg/memory/instances/visualize_instances.py#L304-L341) | Color by CLIP similarity to query (interactive or default "object") |
-| **G** | `toggle_scene_graph()` | [visualize_instances.py:241-253](../DovSG/dovsg/memory/instances/visualize_instances.py#L241-L253) | Show/hide scene graph edges and nodes |
-| **I** | `color_by_instance()` | [visualize_instances.py:290-302](../DovSG/dovsg/memory/instances/visualize_instances.py#L290-L302) | Color each object instance uniquely |
-| **O** | `toggle_bbox()` | [visualize_instances.py:339-349](../DovSG/dovsg/memory/instances/visualize_instances.py#L339-L349) | Show/hide oriented bounding boxes |
-| **V** | `save_view_params()` | [visualize_instances.py:352-354](../DovSG/dovsg/memory/instances/visualize_instances.py#L352-L354) | Save current camera view to `temp.json` |
+| **B** | `toggle_bg_pcd()` | [visualize_instances.py:256-265](../../DovSG/dovsg/memory/instances/visualize_instances.py#L256-L265) | Toggle background point cloud visibility |
+| **C** | `color_by_class()` | [visualize_instances.py:268-280](../../DovSG/dovsg/memory/instances/visualize_instances.py#L268-L280) | Color objects by semantic class |
+| **R** | `color_by_rgb()` | [visualize_instances.py:282-288](../../DovSG/dovsg/memory/instances/visualize_instances.py#L282-L288) | Display original RGB colors |
+| **A** | `color_by_clip_sim()` | [visualize_instances.py:304-341](../../DovSG/dovsg/memory/instances/visualize_instances.py#L304-L341) | Color by CLIP similarity to query (interactive or default "object") |
+| **G** | `toggle_scene_graph()` | [visualize_instances.py:241-253](../../DovSG/dovsg/memory/instances/visualize_instances.py#L241-L253) | Show/hide scene graph edges and nodes |
+| **I** | `color_by_instance()` | [visualize_instances.py:290-302](../../DovSG/dovsg/memory/instances/visualize_instances.py#L290-L302) | Color each object instance uniquely |
+| **O** | `toggle_bbox()` | [visualize_instances.py:339-349](../../DovSG/dovsg/memory/instances/visualize_instances.py#L339-L349) | Show/hide oriented bounding boxes |
+| **V** | `save_view_params()` | [visualize_instances.py:352-354](../../DovSG/dovsg/memory/instances/visualize_instances.py#L352-L354) | Save current camera view to `temp.json` |
 
 **Key Implementation Details**:
 
@@ -1095,7 +1095,7 @@ def toggle_scene_graph(vis):
 
 #### 2.6.4 Scene Graph PDF Visualization
 
-**Method**: **[graph.py:53-97](../DovSG/dovsg/memory/scene_graph/graph.py#L53-L97)** - `SceneGraph.visualize()`
+**Method**: **[graph.py:53-97](../../DovSG/dovsg/memory/scene_graph/graph.py#L53-L97)** - `SceneGraph.visualize()`
 
 ```python
 def visualize(self, save_dir):
@@ -1180,7 +1180,7 @@ def visualize(self, save_dir):
 
 ### 3.1 Node Schema
 
-**ObjectNode Attributes** ([graph.py:5-15](../DovSG/dovsg/memory/scene_graph/graph.py#L5-L15)):
+**ObjectNode Attributes** ([graph.py:5-15](../../DovSG/dovsg/memory/scene_graph/graph.py#L5-L15)):
 
 | Attribute | Type | Description | Example |
 |-----------|------|-------------|---------|
@@ -1211,9 +1211,9 @@ def visualize(self, save_dir):
 
 | Relation | Semantics | Determination Method | Code Reference |
 |----------|-----------|----------------------|----------------|
-| **"on"** | Vertical stacking (A on B) | Z-order + XY alpha shape overlap > 60% | [scene_graph_processer.py:372-422](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L372-L422) |
-| **"belong"** | Part-whole (handle belongs to cabinet) | XY intersection area > 20% for part-level objects | [scene_graph_processer.py:461-486](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L461-L486) |
-| **"inside"** | 3D containment (keys inside drawer) | Delaunay triangulation containment > 95% | [scene_graph_processer.py:648-653](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L648-L653) |
+| **"on"** | Vertical stacking (A on B) | Z-order + XY alpha shape overlap > 60% | [scene_graph_processer.py:372-422](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L372-L422) |
+| **"belong"** | Part-whole (handle belongs to cabinet) | XY intersection area > 20% for part-level objects | [scene_graph_processer.py:461-486](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L461-L486) |
+| **"inside"** | 3D containment (keys inside drawer) | Delaunay triangulation containment > 95% | [scene_graph_processer.py:648-653](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L648-L653) |
 
 **Edge Attributes**:
 - Stored implicitly via `child.parent_relation`
@@ -1235,7 +1235,7 @@ def visualize(self, save_dir):
 
 ### 3.4 Update Mechanism (Dynamic Scene Adaptation)
 
-**Entry Point**: **[scene_graph_processer.py:666-712](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712)** - `update_scene_graph()`
+**Entry Point**: **[scene_graph_processer.py:666-712](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712)** - `update_scene_graph()`
 
 **Algorithm** (from paper Section III.D):
 
@@ -1315,20 +1315,20 @@ visualize_instances.py:94 → Open3D VisualizerWithKeyCallback
 
 ### 4.2 Module Rendering Responsibilities
 
-**Open3D** ([visualize_instances.py](../DovSG/dovsg/memory/instances/visualize_instances.py)):
+**Open3D** ([visualize_instances.py](../../DovSG/dovsg/memory/instances/visualize_instances.py)):
 - **Point Clouds**: Object instances (Lines 128-136)
 - **Bounding Boxes**: Oriented BBs as LineMesh (Lines 154-177)
 - **Background**: Scene background points (Lines 112-120)
 - **Scene Graph Overlays**: Balls (object positions) + Lines (relationships) (Lines 182-229)
 - **Interactive Controls**: Keyboard callbacks (Lines 356-363)
 
-**Graphviz** ([graph.py:53-97](../DovSG/dovsg/memory/scene_graph/graph.py#L53-97)):
+**Graphviz** ([graph.py:53-97](../../DovSG/dovsg/memory/scene_graph/graph.py#L53-97)):
 - **Hierarchical Graph**: Node-edge diagram
 - **Color Coding**: Node types (part/inside/leaf/regular)
 - **Edge Labels**: Relationship types
 - **PDF Output**: `scene_graph.pdf`
 
-**Matplotlib** ([visualize_instances.py:106](../DovSG/dovsg/memory/instances/visualize_instances.py#L106)):
+**Matplotlib** ([visualize_instances.py:106](../../DovSG/dovsg/memory/instances/visualize_instances.py#L106)):
 - **Color Maps**: Turbo colormap for instance/similarity coloring
 
 ### 4.3 Control Mapping Table
@@ -1404,7 +1404,7 @@ volumes:
 
 ### 5.2 Controller Configuration
 
-**Controller Constructor** ([controller.py:42-72](../DovSG/dovsg/controller.py#L42-L72)):
+**Controller Constructor** ([controller.py:42-72](../../DovSG/dovsg/controller.py#L42-L72)):
 
 | Parameter | Default | Description | Impact |
 |-----------|---------|-------------|--------|
@@ -1745,7 +1745,7 @@ graph TD
 **1. Mock Detector**:
 - **Assumption**: `MyGroundingDINOSAM2` returns **zero detections** (mock implementation)
 - **Impact**: All visualizations show empty objects (white screen)
-- **File**: [mygroundingdinosam2.py:10-25](../DovSG/dovsg/perception/models/mygroundingdinosam2.py#L10-L25)
+- **File**: [mygroundingdinosam2.py:10-25](../../DovSG/dovsg/perception/models/mygroundingdinosam2.py#L10-L25)
 - **Evidence**: `run()` method returns empty `DetectionList`
 - **TODO**: Replace with actual GroundingDINO + SAM2 integration
 
@@ -1757,7 +1757,7 @@ graph TD
 - **Clarification**:
   - `clip_vis=True` only enables **interactive query feature** (keyboard 'A')
   - Disabling it does **not** affect 3DSG construction (features already computed in Stage 3)
-- **File**: [visualize_instances.py:104-105](../DovSG/dovsg/memory/instances/visualize_instances.py#L104-L105)
+- **File**: [visualize_instances.py:104-105](../../DovSG/dovsg/memory/instances/visualize_instances.py#L104-L105)
 
 **3. Floor as Global Reference**:
 - **Assumption**: Floor is always present and detectable in at least some frames
@@ -1774,14 +1774,14 @@ graph TD
 **1. Empty Objects Handling**:
 - **Gap**: Several functions assume `len(instance_objects) > 0`
 - **Files Affected**:
-  - [instance_process.py:159-170](../DovSG/dovsg/memory/instances/instance_process.py#L159-L170) - Fixed with length check
-  - [visualize_instances.py:50-71](../DovSG/dovsg/memory/instances/visualize_instances.py#L50-L71) - Fixed with length check
-  - [visualize_instances.py:309-311](../DovSG/dovsg/memory/instances/visualize_instances.py#L309-L311) - Fixed with length check
+  - [instance_process.py:159-170](../../DovSG/dovsg/memory/instances/instance_process.py#L159-L170) - Fixed with length check
+  - [visualize_instances.py:50-71](../../DovSG/dovsg/memory/instances/visualize_instances.py#L50-L71) - Fixed with length check
+  - [visualize_instances.py:309-311](../../DovSG/dovsg/memory/instances/visualize_instances.py#L309-L311) - Fixed with length check
 - **Status**: ✅ Fixed in current implementation
 
 **2. LightGlue Device Mapping**:
 - **Gap**: Loading pre-saved LightGlue features without device mapping causes CUDA error
-- **File**: [controller.py:945-946](../DovSG/dovsg/controller.py#L945-L946)
+- **File**: [controller.py:945-946](../../DovSG/dovsg/controller.py#L945-L946)
 - **Fix Applied**:
   ```python
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -1791,7 +1791,7 @@ graph TD
 
 **3. Docker Interactive Input**:
 - **Gap**: `input()` in non-TTY Docker raises `EOFError`
-- **File**: [visualize_instances.py:309-317](../DovSG/dovsg/memory/instances/visualize_instances.py#L309-L317)
+- **File**: [visualize_instances.py:309-317](../../DovSG/dovsg/memory/instances/visualize_instances.py#L309-L317)
 - **Fix Applied**:
   ```python
   try:
@@ -1803,27 +1803,27 @@ graph TD
 
 **4. Keyboard Shortcut Conflicts**:
 - **Gap**: Original 'F' key for CLIP query conflicts with Open3D or Docker
-- **File**: [visualize_instances.py:364](../DovSG/dovsg/memory/instances/visualize_instances.py#L364)
+- **File**: [visualize_instances.py:364](../../DovSG/dovsg/memory/instances/visualize_instances.py#L364)
 - **Fix Applied**: Changed to 'A' key (for "Ask CLIP")
 - **Status**: ✅ Fixed
 
 ### 8.3 Code Files to Inspect Further
 
 **For Real Detector Integration**:
-1. **[dovsg/perception/models/mygroundingdinosam2.py](../DovSG/dovsg/perception/models/mygroundingdinosam2.py)** - Replace mock with actual GroundingDINO + SAM2
-2. **[dovsg/perception/models/myclip.py](../DovSG/dovsg/perception/models/myclip.py)** - Verify CLIP model loading and feature extraction
+1. **[dovsg/perception/models/mygroundingdinosam2.py](../../DovSG/dovsg/perception/models/mygroundingdinosam2.py)** - Replace mock with actual GroundingDINO + SAM2
+2. **[dovsg/perception/models/myclip.py](../../DovSG/dovsg/perception/models/myclip.py)** - Verify CLIP model loading and feature extraction
 
 **For Scene Graph Relationships**:
-3. **[scene_graph_processer.py:577-656](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L577-L656)** - "inside" relationship logic (Delaunay triangulation)
-4. **[scene_graph_processer.py:461-486](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L461-L486)** - "belong" relationship for parts
+3. **[scene_graph_processer.py:577-656](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L577-L656)** - "inside" relationship logic (Delaunay triangulation)
+4. **[scene_graph_processer.py:461-486](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L461-L486)** - "belong" relationship for parts
 
 **For Dynamic Updates**:
-5. **[scene_graph_processer.py:666-712](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712)** - `update_scene_graph()` differential update logic
-6. **[controller.py:1055-1177](../DovSG/dovsg/controller.py#L1055-L1177)** - Memory update flow (relocalization + local updates)
+5. **[scene_graph_processer.py:666-712](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712)** - `update_scene_graph()` differential update logic
+6. **[controller.py:1055-1177](../../DovSG/dovsg/controller.py#L1055-L1177)** - Memory update flow (relocalization + local updates)
 
 **For Optimization**:
-7. **[view_dataset.py:166-256](../DovSG/dovsg/memory/view_dataset.py#L166-L256)** - Voxelization (potential GPU acceleration)
-8. **[instance_process.py:130-138](../DovSG/dovsg/memory/instances/instance_process.py#L130-L138)** - Similarity computation (vectorization opportunities)
+7. **[view_dataset.py:166-256](../../DovSG/dovsg/memory/view_dataset.py#L166-L256)** - Voxelization (potential GPU acceleration)
+8. **[instance_process.py:130-138](../../DovSG/dovsg/memory/instances/instance_process.py#L130-L138)** - Similarity computation (vectorization opportunities)
 
 ### 8.4 Research Questions
 
@@ -1849,7 +1849,7 @@ graph TD
 ### 9.1 Safe Hook Points for Modifications
 
 **1. Custom Object Detectors** (replace mock):
-- **Hook**: [ram_groundingdino_sam2_clip.py:105-108](../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L105-L108)
+- **Hook**: [ram_groundingdino_sam2_clip.py:105-108](../../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L105-L108)
 - **Interface**:
   ```python
   detections = self.mygroundingdino_sam2.run(image, classes)
@@ -1861,7 +1861,7 @@ graph TD
   - Ensure `DetectionList` schema compatibility
 
 **2. Additional Spatial Relationships**:
-- **Hook**: [scene_graph_processer.py:310-554](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L310-L554) (`build_scene_graph()`)
+- **Hook**: [scene_graph_processer.py:310-554](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L310-L554) (`build_scene_graph()`)
 - **Current Relations**: "on", "belong", "inside"
 - **Extension Pattern**:
   ```python
@@ -1885,7 +1885,7 @@ graph TD
   - `graph.py` (potentially extend edge schema if bidirectional edges needed)
 
 **3. Custom Visualization Modes**:
-- **Hook**: [visualize_instances.py:356-363](../DovSG/dovsg/memory/instances/visualize_instances.py#L356-L363) (keyboard callback registration)
+- **Hook**: [visualize_instances.py:356-363](../../DovSG/dovsg/memory/instances/visualize_instances.py#L356-L363) (keyboard callback registration)
 - **Extension Pattern**:
   ```python
   def color_by_confidence(vis):
@@ -1902,7 +1902,7 @@ graph TD
 - **Files to Modify**: `visualize_instances.py` (add callback function and registration)
 
 **4. Alternative Feature Extractors** (beyond CLIP):
-- **Hook**: [ram_groundingdino_sam2_clip.py:113-119](../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L113-L119) (CLIP feature extraction)
+- **Hook**: [ram_groundingdino_sam2_clip.py:113-119](../../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L113-L119) (CLIP feature extraction)
 - **Interface**:
   ```python
   image_feats, text_feats = self.compute_clip_features(image, detections, classes)
@@ -1915,7 +1915,7 @@ graph TD
   - Ensure `instance_process.py` similarity functions are agnostic to feature dimension
 
 **5. Scene Graph Update Strategies**:
-- **Hook**: [scene_graph_processer.py:666-712](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712) (`update_scene_graph()`)
+- **Hook**: [scene_graph_processer.py:666-712](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L666-L712) (`update_scene_graph()`)
 - **Current**: Full deletion + rebuild for affected subgraph
 - **Alternative**: Incremental edge updates
   ```python
@@ -1967,7 +1967,7 @@ graph TD
 ### 9.3 Performance Optimization Opportunities
 
 **1. GPU-Accelerated Voxelization**:
-- **Current**: CPU-based numpy voxelization ([view_dataset.py:166-256](../DovSG/dovsg/memory/view_dataset.py#L166-L256))
+- **Current**: CPU-based numpy voxelization ([view_dataset.py:166-256](../../DovSG/dovsg/memory/view_dataset.py#L166-L256))
 - **Opportunity**: Use CUDA kernels for parallel voxel index computation
 - **Expected Speedup**: 5-10x for large scenes (>1M points)
 - **Library**: `cupy` or custom CUDA kernels
@@ -1979,7 +1979,7 @@ graph TD
 - **Tradeoff**: Slightly slower lookup (hash vs. array index)
 
 **3. Batch CLIP Feature Extraction**:
-- **Current**: Sequential CLIP inference per detection ([ram_groundingdino_sam2_clip.py:113-119](../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L113-L119))
+- **Current**: Sequential CLIP inference per detection ([ram_groundingdino_sam2_clip.py:113-119](../../DovSG/dovsg/memory/ram_groundingdino_sam2_clip_semantic_memory.py#L113-L119))
 - **Opportunity**: Batch process all detections in a frame
 - **Expected Speedup**: 2-5x (GPU utilization improvement)
 - **Implementation**:
@@ -1994,7 +1994,7 @@ graph TD
   ```
 
 **4. Incremental Scene Graph Updates**:
-- **Current**: Full subgraph deletion + rebuild ([scene_graph_processer.py:686-712](../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L686-L712))
+- **Current**: Full subgraph deletion + rebuild ([scene_graph_processer.py:686-712](../../DovSG/dovsg/memory/scene_graph/scene_graph_processer.py#L686-L712))
 - **Opportunity**: Track changed objects only, update affected edges
 - **Expected Speedup**: 10-100x for minor changes (1-2 objects moved)
 - **Complexity**: Requires dependency tracking (which edges depend on which objects)
