@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from PIL import Image
 import supervision as sv
 import sys
@@ -30,6 +31,23 @@ class RamGroundingDinoSAM2ClipDataset():
         self.nms_threshold = nms_threshold
         self.accumu_classes = accumu_classes
 
+        ### Initialize the RAM (tagging) model ###
+        tagging_model = ram(
+            pretrained=ram_checkpoint_path, 
+            image_size=384, vit="swin_l", 
+            text_encoder_type=bert_base_uncased_path
+        )
+        try:
+            self.tagging_model = tagging_model.eval().to(self.device)
+        except RuntimeError as exc:
+            if "out of memory" in str(exc).lower():
+                print("RAM tagging model OOM on CUDA; falling back to CPU.")
+                torch.cuda.empty_cache()
+                self.device = "cpu"
+                self.tagging_model = tagging_model.eval().to("cpu")
+            else:
+                raise
+
         # ### Initialize the GroundingDINO SAM2 model ###
         self.mygroundingdino_sam2 = MyGroundingDINOSAM2(
             box_threshold=self.box_threshold,
@@ -37,15 +55,7 @@ class RamGroundingDinoSAM2ClipDataset():
             device=self.device
         )
 
-        self.myclip = MyClip(device=device)
-        
-        ### Initialize the RAM (tagging) model ###
-        tagging_model = ram(
-            pretrained=ram_checkpoint_path, 
-            image_size=384, vit="swin_l", 
-            text_encoder_type=bert_base_uncased_path
-        )
-        self.tagging_model = tagging_model.eval().to(self.device)
+        self.myclip = MyClip(device=self.device)
         
         # initialize Tag2Text
         self.tagging_transform = transforms.Compose([
@@ -218,4 +228,3 @@ class RamGroundingDinoSAM2ClipDataset():
         
 
         
-

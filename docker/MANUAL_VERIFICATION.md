@@ -178,7 +178,7 @@ data_example/room1/
 docker compose exec dovsg python -u demo.py --tags "room1" --preprocess --debug --skip_task_planning
 ```
 
-*3DSG-only shortcut:* when you only need scene-graph generation/visualization (no relocalization), add `--skip_ace --skip_lightglue` to skip the ACE training and LightGlue feature extraction stages. These components are used later for relocalization/path-planning and are not required for the viewer.
+*3DSG-only shortcut:* when you only need scene-graph generation/visualization (no relocalization), add `--skip_ace --skip_lightglue --semantic_device cpu` to skip ACE/LightGlue and run semantic tagging on CPU (avoids GPU OOM at the cost of slower tagging).
 
 **Expected GUI Windows** (during execution):
 1. DROID-SLAM point cloud visualization
@@ -242,7 +242,7 @@ docker compose exec dovsg python -u demo.py \
   --skip_lightglue
 ```
 
-*3DSG-only shortcut:* add `--skip_lightglue` if LightGlue features are not needed.
+*3DSG-only shortcut:* add `--skip_lightglue --semantic_device cpu` if LightGlue features aren’t needed and GPU memory is tight.
 
 **Expected**:
 - Skips pose estimation and preprocessing steps

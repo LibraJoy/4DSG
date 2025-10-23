@@ -8,7 +8,7 @@ def main(args):
         step=0, 
         tags=args.tags, 
         interval=3, 
-        resolution=0.01,
+        resolution=0.02,
         occ_avoid_radius=0.2,
         save_memory=args.save_memory,
         debug=args.debug
@@ -38,7 +38,7 @@ def main(args):
 
     # when first times, init scenario
     controller.get_view_dataset()
-    controller.get_semantic_memory()
+    controller.get_semantic_memory(device=args.semantic_device)
     controller.get_instances()
     controller.get_instance_scene_graph()
     if not args.skip_lightglue:
@@ -79,6 +79,9 @@ if __name__ == "__main__":
 
     parser.add_argument('--scanning_room', action='store_true', help='For hand camera to recorder scene.')
     parser.add_argument('--preprocess', action='store_true', help='preprocess scene.')
+    parser.add_argument('--semantic_device', type=str, default="cuda",
+                        choices=["cuda", "cpu"],
+                        help='Device for semantic memory models (RAM/GroundingDINO).')
     parser.add_argument('--skip_ace', action='store_true', help='Skip ACE training during preprocessing.')
     parser.add_argument('--skip_lightglue', action='store_true', help='Skip LightGlue feature extraction.')
     parser.add_argument('--debug', action='store_true', help='For debug mode.')
