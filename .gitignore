@@ -82,7 +82,6 @@ logs/
 *.pth
 *.ckpt
 *.safetensors
-models/
 weights/
 
 # Data Files

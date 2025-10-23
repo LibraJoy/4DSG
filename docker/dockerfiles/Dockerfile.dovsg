@@ -92,6 +92,8 @@ WORKDIR /app
 COPY DovSG/third_party/GroundingDINO ./third_party/GroundingDINO/
 WORKDIR /app/third_party/GroundingDINO
 RUN pip install -e .
+# Compile GroundingDINO C++ CUDA extensions for GPU acceleration
+RUN python setup.py build_ext --inplace
 
 # 3. RAM & Tag2Text
 WORKDIR /app

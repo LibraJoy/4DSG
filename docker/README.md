@@ -89,6 +89,8 @@ Example data (~23GB, optional - see instructions in download script output)
 # Subsequent builds: 2-5 minutes (cached)
 ```
 
+**Note**: The build automatically compiles GroundingDINO C++ CUDA extensions for GPU acceleration. This compilation happens during the Docker build process, so the extensions are ready immediately when the container starts.
+
 ### 4. Start Containers
 ```bash
 ./scripts/docker_run.sh

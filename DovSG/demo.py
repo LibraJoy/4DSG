@@ -29,7 +29,8 @@ def main(args):
         controller.transform_pose_with_floor(display_result=False)
 
         # use transformed pose train ace for relocalize
-        controller.train_ace()
+        if not args.skip_ace:
+            controller.train_ace()
 
         # vis_depth(controller.recorder_dir)
    
@@ -40,14 +41,15 @@ def main(args):
     controller.get_semantic_memory()
     controller.get_instances()
     controller.get_instance_scene_graph()
-    controller.get_lightglue_features()
+    if not args.skip_lightglue:
+        controller.get_lightglue_features()
 
     # controller.show_pointcloud()
     """
         press "B" to show background
         press "C" to color by class
         press "R" to color by rgb
-        press "F" to color by clip sim
+        press "A" to color by clip sim
         press "G" to toggle scene graph
         press "I" to color by instance
         press "O" to toggle bbox
@@ -77,6 +79,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--scanning_room', action='store_true', help='For hand camera to recorder scene.')
     parser.add_argument('--preprocess', action='store_true', help='preprocess scene.')
+    parser.add_argument('--skip_ace', action='store_true', help='Skip ACE training during preprocessing.')
+    parser.add_argument('--skip_lightglue', action='store_true', help='Skip LightGlue feature extraction.')
     parser.add_argument('--debug', action='store_true', help='For debug mode.')
     parser.add_argument('--skip_task_planning', action='store_true', help='Skip task planning stage (no API key required).')
 

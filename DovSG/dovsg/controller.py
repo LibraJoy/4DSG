@@ -53,8 +53,10 @@ class Controller():
             occ_threshold: int=100,
             conservative: bool=True,
             # semantic memory
-            box_threshold: float=0.2,
-            text_threshold: float=0.2,
+            # box_threshold: float=0.2,
+            # text_threshold: float=0.2,
+            box_threshold: float=0.1,
+            text_threshold: float=0.1,
             nms_threshold: float=0.5,
             delete_rate: float=0.5,
 

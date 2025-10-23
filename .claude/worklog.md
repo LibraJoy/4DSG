@@ -449,3 +449,78 @@ Align top-level README.md with consolidated Docker documentation structure, elim
 ### Validation Commands (not executed)
 1. `cd docker && ./scripts/run_3dsg_only.sh room1`
 2. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning`  # fallback if rebuild still yields zero objects
+
+## 2025-10-07 - Memory Subsystem Intro
+
+### Changes
+- Authored `.claude/reports/memory_intro.md` documenting `dovsg/memory` modules, memory directory structure, artifact producers/consumers, and CLI flows for regenerating caches (e.g., `instance_objects.pkl`).
+
+### Notes
+- Documentation-only update to aid debugging; no code changes or commands executed.
+
+## 2025-10-07 - Restore GroundingDINO-based Detection
+
+### Changes
+- Replaced the stubbed `MyGroundingDINOSAM2` implementation with a GroundingDINO-backed detector that loads the configured checkpoints (`checkpoints/GroundingDINO/*`) and produces real bounding boxes/masks (approximated from the boxes) for downstream semantic memory generation.
+
+### Validation Commands (not executed)
+1. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning`
+2. `docker compose exec dovsg python - <<"PY"`<br>`import pickle; import pathlib; base = pathlib.Path("/app/data_example/room1/memory/3_0.1_0.01_True_0.2_0.5/step_0");`<br>`det = pickle.load((base/"semantic_memory/000000.pkl").open("rb")); print("detections:", len(det["xyxy"]))`<br>`PY`
+
+## 2025-10-07 - 3DSG-only CLI flags
+
+### Changes
+- Added `--skip_ace` and `--skip_lightglue` flags in `DovSG/demo.py` to let preprocessing skip ACE training and LightGlue feature extraction when generating 3DSG only.
+- Updated `docker/MANUAL_VERIFICATION.md` to document the optional 3DSG-only commands that use the new flags.
+
+### Validation Commands (not executed)
+1. `docker compose exec dovsg python -u demo.py --tags room1 --preprocess --debug --skip_task_planning --skip_ace --skip_lightglue`
+2. `docker compose exec dovsg python -u demo.py --tags room1 --skip_task_planning --skip_lightglue`
+
+## 2025-10-23 - GroundingDINO C++ Extension Compilation Fixed
+
+### Issue Identified
+**Root Cause**: GroundingDINO C++ CUDA extensions (_C module) were not compiled, causing semantic pipeline to fail with `NameError: name '_C' is not defined`. The multi-scale deformable attention (ms_deform_attn) kernels require GPU compilation to function.
+
+**Impact**:
+- Semantic memory processing failed before generating detections
+- `instance_objects.pkl` remained empty (zero instances)
+- Scene graph only contained floor node
+
+### Changes Made
+
+#### 1. GroundingDINO C++ Compilation Added to Dockerfile
+**File**: `docker/dockerfiles/Dockerfile.dovsg`
+**Line 96**: Added compilation step after pip install
+```diff
+# 2. GroundingDINO
+WORKDIR /app
+COPY DovSG/third_party/GroundingDINO ./third_party/GroundingDINO/
+WORKDIR /app/third_party/GroundingDINO
+RUN pip install -e .
++# Compile GroundingDINO C++ CUDA extensions for GPU acceleration
++RUN python setup.py build_ext --inplace
+```
+
+**Compilation Output**: Generates `groundingdino/_C.cpython-39-x86_64-linux-gnu.so` (2.4MB binary)
+
+#### 2. Restored Original Perception Model Files
+**Files**:
+- `DovSG/dovsg/perception/models/mygroundingdinosam2.py` - Replaced with original GroundingDINO+SAM2 implementation
+- `DovSG/dovsg/perception/models/myclip.py` - Replaced with original singleton pattern implementation
+
+**Backup Files** (for reference):
+- `DovSG/dovsg/perception/models/mygroundingdinosam2(origin).py`
+- `DovSG/dovsg/perception/models/myclip(origin).py`
+
+#### 3. Fixed ColorPalette API Breaking Change
+**File**: `DovSG/dovsg/perception/models/mygroundingdinosam2.py`
+**Line 112**: Updated for supervision 0.26.1 compatibility
+```diff
+-color: Union[Color, ColorPalette] = ColorPalette.default()
++color: Union[Color, ColorPalette] = ColorPalette.DEFAULT
+```
+
+**Rationale**: Supervision library changed from `.default()` method to `.DEFAULT` class attribute
+
+

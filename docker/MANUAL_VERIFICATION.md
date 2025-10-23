@@ -178,6 +178,8 @@ data_example/room1/
 docker compose exec dovsg python -u demo.py --tags "room1" --preprocess --debug --skip_task_planning
 ```
 
+*3DSG-only shortcut:* when you only need scene-graph generation/visualization (no relocalization), add `--skip_ace --skip_lightglue` to skip the ACE training and LightGlue feature extraction stages. These components are used later for relocalization/path-planning and are not required for the viewer.
+
 **Expected GUI Windows** (during execution):
 1. DROID-SLAM point cloud visualization
 2. View dataset point cloud
@@ -201,7 +203,7 @@ When the main 3DSG viewer window appears (final step of Test 3.1):
 - **B** - Toggle background point cloud visibility
 - **C** - Color objects by semantic class (red=objects, green=surfaces)
 - **R** - Color objects by RGB appearance (natural colors)
-- **A** - Color by CLIP feature similarity
+- **A** - Color by CLIP feature similarity (changed from 'F' on 2025-01-26)
 - **G** - Toggle scene graph relationship lines (spatial edges between objects)
 - **I** - Color by instance ID (unique color per detected object)
 - **O** - Toggle 3D bounding boxes around objects
@@ -231,8 +233,16 @@ When the main 3DSG viewer window appears (final step of Test 3.1):
 ./scripts/run_3dsg_only.sh room1
 
 # Option 2: Direct command (skips --preprocess)
-docker compose exec dovsg python -u demo.py --tags room1 --skip_task_planning
+docker compose exec dovsg python -u demo.py \
+  --tags room1 \
+  --preprocess \
+  --debug \
+  --skip_task_planning \
+  --skip_ace \
+  --skip_lightglue
 ```
+
+*3DSG-only shortcut:* add `--skip_lightglue` if LightGlue features are not needed.
 
 **Expected**:
 - Skips pose estimation and preprocessing steps
