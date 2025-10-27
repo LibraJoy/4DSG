@@ -32,30 +32,39 @@ class RamGroundingDinoSAM2ClipDataset():
         self.accumu_classes = accumu_classes
 
         ### Initialize the RAM (tagging) model ###
+        # RAM is memory-heavy, prefer CPU if device="cpu" or if CUDA OOMs
+        self.ram_device = "cpu" if device == "cpu" else "cuda"
         tagging_model = ram(
-            pretrained=ram_checkpoint_path, 
-            image_size=384, vit="swin_l", 
+            pretrained=ram_checkpoint_path,
+            image_size=384, vit="swin_l",
             text_encoder_type=bert_base_uncased_path
         )
         try:
-            self.tagging_model = tagging_model.eval().to(self.device)
+            self.tagging_model = tagging_model.eval().to(self.ram_device)
+            print(f"✓ RAM model loaded on {self.ram_device}")
         except RuntimeError as exc:
             if "out of memory" in str(exc).lower():
-                print("RAM tagging model OOM on CUDA; falling back to CPU.")
+                print("⚠ RAM model OOM on CUDA; falling back to CPU.")
                 torch.cuda.empty_cache()
-                self.device = "cpu"
+                self.ram_device = "cpu"
                 self.tagging_model = tagging_model.eval().to("cpu")
             else:
                 raise
 
         # ### Initialize the GroundingDINO SAM2 model ###
+        # Always use GPU for detection (fast with C++ CUDA extensions)
+        self.detection_device = "cuda" if torch.cuda.is_available() else "cpu"
         self.mygroundingdino_sam2 = MyGroundingDINOSAM2(
             box_threshold=self.box_threshold,
             text_threshold=self.text_threshold,
-            device=self.device
+            device=self.detection_device
         )
+        print(f"✓ GroundingDINO + SAM2 loaded on {self.detection_device}")
 
-        self.myclip = MyClip(device=self.device)
+        # CLIP can stay on GPU (moderate memory, fast inference)
+        self.clip_device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.myclip = MyClip(device=self.clip_device)
+        print(f"✓ CLIP model loaded on {self.clip_device}")
         
         # initialize Tag2Text
         self.tagging_transform = transforms.Compose([
@@ -102,7 +111,7 @@ class RamGroundingDinoSAM2ClipDataset():
     def semantic_process(self, image: np.ndarray):
         image_pil = Image.fromarray(image)
         raw_image = image_pil.resize((384, 384))
-        raw_image = self.tagging_transform(raw_image).unsqueeze(0).to(self.device)
+        raw_image = self.tagging_transform(raw_image).unsqueeze(0).to(self.ram_device)
         text_prompt = inference_ram(raw_image , self.tagging_model)[0].replace(' | ', '.')
         classes = self.process_tag_classes(text_prompt=text_prompt)
         self.global_classes.update(classes)

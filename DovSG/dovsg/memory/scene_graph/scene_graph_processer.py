@@ -442,7 +442,8 @@ class SceneGraphProcesser:
 
             # Initialize a FAISS L2 distance index for fast nearest neighbor search
             index = faiss.IndexFlatL2(part_points.shape[1])
-            index.add(part_points)  # Add part object's points to the FAISS index
+            # FAISS requires float32, but index_to_point returns float64
+            index.add(part_points.astype(np.float32))  # Add part object's points to the FAISS index
 
             parent_class_ids = []
             threshold = self.resolution * 10  # Define the distance threshold (e.g., 0.01 units)
@@ -453,9 +454,10 @@ class SceneGraphProcesser:
                 
                 # Convert parent object indexes into point coordinates
                 parent_points = self.view_dataset.index_to_point(ins_obj_indexes)
-                
+
                 # Use FAISS to search for the nearest points in the part object for each parent point
-                D, I = index.search(parent_points, 1)  # D contains the distances, I contains the indices of nearest points
+                # FAISS requires float32, but index_to_point returns float64
+                D, I = index.search(parent_points.astype(np.float32), 1)  # D contains the distances, I contains the indices of nearest points
 
                 # Calculate the ratio of points within the threshold distance
                 close_points_rate = np.sum(D < threshold ** 2) / len(D)  # Compute the proportion of points below the threshold distance

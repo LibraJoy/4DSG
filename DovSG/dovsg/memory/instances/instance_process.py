@@ -266,8 +266,9 @@ class InstanceProcess:
         indices = [faiss.IndexFlatL2(arr.shape[1]) for arr in point_arrays]
         
         # Add the points from the numpy arrays to the corresponding FAISS indices
+        # FAISS requires float32, but index_to_point returns float64
         for index, arr in zip(indices, point_arrays):
-            index.add(arr)
+            index.add(arr.astype(np.float32))
 
         # Compute the pairwise overlaps
         for i in range(n):
@@ -283,7 +284,8 @@ class InstanceProcess:
                     
                     # # Use range_search to find points within the threshold
                     # _, I = indices[j].range_search(point_arrays[i], threshold ** 2)
-                    D, I = indices[j].search(point_arrays[i], 1)
+                    # FAISS requires float32, but index_to_point returns float64
+                    D, I = indices[j].search(point_arrays[i].astype(np.float32), 1)
 
                     # # If any points are found within the threshold, increase overlap count
                     # overlap += sum([len(i) for i in I])
@@ -513,8 +515,9 @@ class InstanceProcess:
         indices_map = [faiss.IndexFlatL2(arr.shape[1]) for arr in points_map] # m indices
         
         # Add the points from the numpy arrays to the corresponding FAISS indices
+        # FAISS requires float32, but index_to_point returns float64
         for index, arr in zip(indices_map, points_map):
-            index.add(arr)
+            index.add(arr.astype(np.float32))
             
         # points_new = [np.asarray(obj['pcd'].points, dtype=np.float32) for obj in objects_new] # n arrays
         points_new = [self.view_dataset.index_to_point(obj['indexes']) for obj in objects_new]
@@ -557,7 +560,8 @@ class InstanceProcess:
                 if iou[i, j] < 1e-6:
                     continue
                 
-                D, I = indices_map[i].search(points_new[j], 1) # search new object j in map object i
+                # FAISS requires float32, but index_to_point returns float64
+                D, I = indices_map[i].search(points_new[j].astype(np.float32), 1) # search new object j in map object i
 
                 overlap = (D < self.downsample_voxel_size ** 2).sum() # D is the squared distance
 

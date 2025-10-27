@@ -123,6 +123,8 @@ WORKDIR /app
 COPY DovSG/third_party/pytorch3d ./third_party/pytorch3d/
 WORKDIR /app/third_party/pytorch3d
 RUN pip install -e .
+# Compile PyTorch3D C++ CUDA extensions for 3D IoU operations
+RUN python setup.py build_ext --inplace
 
 # Install core Python packages with version alignment
 WORKDIR /app

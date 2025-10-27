@@ -539,3 +539,226 @@ RUN pip install -e .
 
 **Rationale**: Supervision library changed from `.default()` method to `.DEFAULT` class attribute
 
+
+## 2025-10-23 - FAISS Float32 Type Error Fix
+
+### Issue Identified
+**Error**: `TypeError: in method 'IndexFlatCodes_add', argument 3 of type 'float const *'`
+**Location**: `DovSG/dovsg/memory/instances/instance_process.py:517`
+**Stage**: Instance processing (after semantic memory completed successfully)
+
+### Root Cause
+FAISS library requires `float32` arrays but `view_dataset.index_to_point()` returns `float64` (numpy default dtype). When adding points to FAISS index at line 517, type mismatch causes TypeError.
+
+**Evidence**:
+- Line 511 (commented): Original code explicitly converted to float32
+  ```python
+  # points_map = [np.asarray(obj['pcd'].points, dtype=np.float32) for obj in objects_map]
+  ```
+- Line 512 (current): Uses index_to_point() which returns float64
+  ```python
+  points_map = [self.view_dataset.index_to_point(obj['indexes']) for obj in objects_map]
+  ```
+
+### Minimal Fix Applied
+
+**File**: `DovSG/dovsg/memory/instances/instance_process.py`
+**Lines**: 515-518
+
+```diff
+ # Add the points from the numpy arrays to the corresponding FAISS indices
++# FAISS requires float32, but index_to_point returns float64
+ for index, arr in zip(indices_map, points_map):
+-    index.add(arr)
++    index.add(arr.astype(np.float32))
+```
+
+### Selective Device Placement Summary
+Successfully implemented in previous session:
+- **RAM → CPU**: Avoids GPU OOM, acceptable speed
+- **GroundingDINO + SAM2 → GPU**: Fast with C++ CUDA extensions
+- **CLIP → GPU**: Fast feature extraction
+
+### Testing Command
+```bash
+cd /home/cerlab/4DSG/docker
+docker compose exec dovsg python -u demo.py \
+  --tags room1 \
+  --preprocess \
+  --debug \
+  --skip_task_planning \
+  --skip_ace \
+  --skip_lightglue
+```
+
+### Expected Next Steps
+1. Instance processing should complete without FAISS errors
+2. Verify `instance_objects.pkl` has non-zero instances
+3. Verify scene graph has multiple nodes (not just floor)
+
+### Notes
+- The fix converts arrays to float32 only where needed (at FAISS interface)
+- Follows KISS principle: minimal change at the point of failure
+
+## 2025-10-27 - FAISS Float32 Fix #2 (search method)
+
+### Issue Identified
+**Error**: `TypeError: in method 'IndexFlat_search', argument 3 of type 'float const *'`
+**Location**: `DovSG/dovsg/memory/instances/instance_process.py:561` (during `compute_overlap_matrix_2set`)
+**Stage**: Instance processing, frame 1/247
+
+### Root Cause
+Same as previous FAISS fix - FAISS requires float32 arrays, but `index_to_point()` returns float64 (numpy default). This time the error occurred in the `.search()` method (line 561) rather than `.add()` method (line 518).
+
+### Fix Applied
+
+**File**: `DovSG/dovsg/memory/instances/instance_process.py`
+**Lines**: 561-562
+
+```diff
+-D, I = indices_map[i].search(points_new[j], 1)
++# FAISS requires float32, but index_to_point returns float64
++D, I = indices_map[i].search(points_new[j].astype(np.float32), 1)
+```
+
+### Pattern
+All FAISS operations (both `.add()` and `.search()`) need float32 conversion:
+1. Line 518: `.add(arr.astype(np.float32))` - when adding points to index in `compute_overlap_matrix_2set`
+2. Line 562: `.search(points_new[j].astype(np.float32), 1)` - when searching points in index in `compute_overlap_matrix_2set`
+
+Both fixes address the same root cause: `view_dataset.index_to_point()` returns float64 arrays.
+
+## 2025-10-27 - FAISS Float32 Fix #3 (compute_overlap_matrix function)
+
+### Issue Identified
+**Error**: `TypeError: in method 'IndexFlatCodes_add', argument 3 of type 'float const *'`
+**Location**: `DovSG/dovsg/memory/instances/instance_process.py:270` (during `compute_overlap_matrix` in `merge_objects`)
+**Stage**: Merge objects phase (after instance processing completed 247/247 frames)
+
+### Root Cause
+Same FAISS float32 requirement, but in a different function - `compute_overlap_matrix()` (used for merging objects) vs `compute_overlap_matrix_2set()` (used for spatial similarities during instance processing).
+
+### Fix Applied
+
+**File**: `DovSG/dovsg/memory/instances/instance_process.py`
+**Lines**: 271, 288
+
+```diff
+ # Add the points from the numpy arrays to the corresponding FAISS indices
++# FAISS requires float32, but index_to_point returns float64
+ for index, arr in zip(indices, point_arrays):
+-    index.add(arr)
++    index.add(arr.astype(np.float32))
+```
+
+```diff
++# FAISS requires float32, but index_to_point returns float64
+-D, I = indices[j].search(point_arrays[i], 1)
++D, I = indices[j].search(point_arrays[i].astype(np.float32), 1)
+```
+
+### Complete FAISS Float32 Fix Summary
+All four FAISS operations in `instance_process.py` now have float32 conversion:
+1. Line 518: `.add()` in `compute_overlap_matrix_2set` ✓
+2. Line 562: `.search()` in `compute_overlap_matrix_2set` ✓
+3. Line 271: `.add()` in `compute_overlap_matrix` ✓
+4. Line 288: `.search()` in `compute_overlap_matrix` ✓
+
+Root cause: `view_dataset.index_to_point()` returns float64 arrays, but FAISS requires float32.
+
+### Progress Achieved
+Pipeline successfully completed:
+- ✓ Floor detection (247/247 frames)
+- ✓ Semantic memory (loaded from cache)
+- ✓ Instance processing (247/247 frames)
+- ✓ Denoise objects (302/302 objects)
+- Next: Merge objects (now fixed)
+
+## 2025-10-27 - FAISS Float32 Fix #4 (scene graph construction)
+
+### Issue Identified
+**Error**: `TypeError: in method 'IndexFlatCodes_add', argument 3 of type 'float const *'`
+**Location**: `DovSG/dovsg/memory/scene_graph/scene_graph_processer.py:445` (during `find_parent_instance_object`)
+**Stage**: Part-level object processing in scene graph construction (after all instances processed successfully)
+
+### Root Cause
+Same FAISS float32 requirement, but in scene graph processor during part-to-parent relationship detection.
+
+### Fix Applied
+
+**File**: `DovSG/dovsg/memory/scene_graph/scene_graph_processer.py`
+**Lines**: 446, 460
+
+```diff
+ # Initialize a FAISS L2 distance index for fast nearest neighbor search
+ index = faiss.IndexFlatL2(part_points.shape[1])
++# FAISS requires float32, but index_to_point returns float64
+-index.add(part_points)
++index.add(part_points.astype(np.float32))
+```
+
+```diff
+ # Use FAISS to search for the nearest points in the part object for each parent point
++# FAISS requires float32, but index_to_point returns float64
+-D, I = index.search(parent_points, 1)
++D, I = index.search(parent_points.astype(np.float32), 1)
+```
+
+### Complete FAISS Float32 Fix Summary (All Files)
+All **six FAISS operations** across the codebase now have float32 conversion:
+
+**instance_process.py**:
+1. Line 518: `.add()` in `compute_overlap_matrix_2set` ✓
+2. Line 562: `.search()` in `compute_overlap_matrix_2set` ✓
+3. Line 271: `.add()` in `compute_overlap_matrix` ✓
+4. Line 288: `.search()` in `compute_overlap_matrix` ✓
+
+**scene_graph_processer.py**:
+5. Line 446: `.add()` in `find_parent_instance_object` ✓
+6. Line 460: `.search()` in `find_parent_instance_object` ✓
+
+Root cause: `view_dataset.index_to_point()` returns float64 arrays, but FAISS requires float32.
+
+### Progress Achieved
+Pipeline successfully progressed through:
+- ✓ Floor detection (247/247 frames)
+- ✓ Semantic memory (loaded from cache)
+- ✓ Instance processing (247/247 frames)
+- ✓ Denoise objects (302 → 300 after merging → 59 after filtering)
+- ✓ Merge objects (33 seconds)
+- ✓ Filter objects (59 objects)
+- ✓ Label non-part object information mapping
+- → Part-level object processing (now fixed)
+
+## 2025-10-23 - PyTorch3D C++ Compilation Fix (Permanent Solution)
+
+### Issue Identified
+**Error**: `ImportError: cannot import name '_C' from 'pytorch3d'`
+**Location**: `DovSG/dovsg/memory/instances/instance_process.py:526` (during `compute_3d_iou_accuracte_batch`)
+**Stage**: Instance processing, frame 1/247
+
+### Root Cause
+PyTorch3D C++ extensions not compiled during Docker image build. The function `compute_3d_iou_accuracte_batch()` attempts to import `pytorch3d.ops` (line 491), which requires compiled C++ extensions (`_C` module) for 3D IoU operations.
+
+This mirrors the GroundingDINO compilation fix that was previously applied at Dockerfile line 96.
+
+### Permanent Fix Applied
+
+**File**: `docker/dockerfiles/Dockerfile.dovsg`
+**Lines**: 121-127
+
+Added C++ CUDA extension compilation after PyTorch3D pip installation:
+
+```dockerfile
+# 7. PyTorch3D
+WORKDIR /app
+COPY DovSG/third_party/pytorch3d ./third_party/pytorch3d/
+WORKDIR /app/third_party/pytorch3d
+RUN pip install -e .
+# Compile PyTorch3D C++ CUDA extensions for 3D IoU operations
+RUN python setup.py build_ext --inplace
+```
+
+This follows the same pattern as GroundingDINO (lines 92-96) and ensures the `_C` module is properly compiled during image build.
+
+
