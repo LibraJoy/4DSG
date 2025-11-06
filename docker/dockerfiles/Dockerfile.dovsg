@@ -79,9 +79,9 @@ RUN pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url h
 WORKDIR /app
 
 # Copy and install third-party dependencies in order
-# 1. SAM2
-COPY DovSG/third_party/segment-anything-2 ./third_party/segment-anything-2/
-WORKDIR /app/third_party/segment-anything-2
+# 1. SAM2 (segment-anything-2 is a symlink/pointer to sam2)
+COPY DovSG/third_party/sam2 ./third_party/sam2/
+WORKDIR /app/third_party/sam2
 # Modify setup.py for compatibility
 RUN sed -i 's/"numpy>=1.24.4"/"numpy>=1.23.0"/' setup.py && \
     sed -i 's/python_requires=">=3.10.0"/python_requires=">=3.9.0"/' setup.py
@@ -91,9 +91,11 @@ RUN pip install -e . && pip install -e ".[demo]"
 WORKDIR /app
 COPY DovSG/third_party/GroundingDINO ./third_party/GroundingDINO/
 WORKDIR /app/third_party/GroundingDINO
-RUN pip install -e .
-# Compile GroundingDINO C++ CUDA extensions for GPU acceleration
+# Install dependencies first
+RUN pip install transformers addict yapf timm supervision pycocotools
+# Compile and install GroundingDINO C++ CUDA extensions
 RUN python setup.py build_ext --inplace
+RUN python setup.py install
 
 # 3. RAM & Tag2Text
 WORKDIR /app
@@ -107,7 +109,8 @@ RUN conda install -c conda-forge opencv -y
 WORKDIR /app/ace/dsacstar
 # Fix OpenCV library paths for conda-forge installation
 RUN sed -i "s|opencv_lib_dir = conda_env + '/lib/opencv4'|opencv_lib_dir = conda_env + '/lib'|g" setup.py
-RUN pip install -e .
+RUN python setup.py build_ext --inplace
+RUN python setup.py install
 
 # 5. LightGlue
 WORKDIR /app
@@ -122,9 +125,9 @@ RUN conda install -c conda-forge faiss-cpu -y
 WORKDIR /app
 COPY DovSG/third_party/pytorch3d ./third_party/pytorch3d/
 WORKDIR /app/third_party/pytorch3d
-RUN pip install -e .
-# Compile PyTorch3D C++ CUDA extensions for 3D IoU operations
+# Compile and install PyTorch3D C++ CUDA extensions for 3D IoU operations
 RUN python setup.py build_ext --inplace
+RUN python setup.py install
 
 # Install core Python packages with version alignment
 WORKDIR /app

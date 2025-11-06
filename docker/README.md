@@ -7,7 +7,7 @@ Quick start guide for setting up the DovSG Docker environment on a new machine.
 ### 1. System Requirements
 - Ubuntu 20.04+ (tested on 20.04, 22.04, 24.04)
 - NVIDIA GPU with ≥8GB VRAM
-- 50GB free disk space (containers + checkpoints + data)
+- 100GB free disk space (containers + checkpoints + data)
 - 16GB+ RAM recommended
 
 ### 2. Required Software

@@ -762,3 +762,4 @@ RUN python setup.py build_ext --inplace
 This follows the same pattern as GroundingDINO (lines 92-96) and ensures the `_C` module is properly compiled during image build.
 
 
+- 2025-10-31: Docker build portability analysis → [.claude/report/docker-build-portability.md](.claude/report/docker-build-portability.md)

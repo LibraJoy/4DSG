@@ -10,7 +10,9 @@
       "Bash(./scripts/06_run_demo.sh:*)",
       "Bash(docker exec:*)",
       "Bash(git grep:*)",
-      "Bash(git -C /home/cerlab/4DSG status --porcelain DovSG/third_party/)"
+      "Bash(git -C /home/cerlab/4DSG status --porcelain DovSG/third_party/)",
+      "Bash(gh pr list:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

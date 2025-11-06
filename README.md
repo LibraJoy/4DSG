@@ -66,6 +66,13 @@ cd 4DSG/docker
 - Manual download required from [Google Drive](https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x?usp=sharing)
 - Extract to `DovSG/data_example/room1/`
 
+**Collecting Your Own Data with RealSense Camera**:
+- See detailed guide: [.claude/reports/realsense-d435i-setup-guide.md](.claude/reports/realsense-d435i-setup-guide.md)
+- **Important**: Update camera serial number in `DovSG/dovsg/scripts/realsense_recorder.py` (Line 22)
+  - Find your serial: `rs-enumerate-devices | grep "Serial Number"`
+  - Default is set to `"215222073770"` - replace with your D435i serial number
+- Requires USB device access (already configured in `docker/docker-compose.yml`)
+
 ## Architecture
 
 ### Docker Services

@@ -1,5 +1,7 @@
 # Git
+# Ignore all git metadata so broken submodule refs don't enter the build context
 .git/
+**/.git
 .gitignore
 
 # Python

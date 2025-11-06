@@ -43,6 +43,10 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
       - DISPLAY=${DISPLAY:-:0}
       - PYTHONUNBUFFERED=1
+    # RealSense camera USB device access
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    privileged: true
     volumes:
       # Data and model volumes
       - ../DovSG/data_example:/app/data_example
