@@ -1,0 +1,7 @@
+# ninja log v7
+1	10372	1758664053386582845	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/src/droid.o	61553d55d2e63365
+0	92808	1758664053385582842	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/src/correlation_kernels.o	2914e15b7ab7059d
+0	94584	1758664053385582842	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/src/altcorr_kernel.o	18794a76de4d1d85
+1	104412	1758664053386582845	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/src/droid_kernels.o	3e5acdee206de1a2
+1	9931	1758664158121775550	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/thirdparty/lietorch/lietorch/src/lietorch.o	29de8062bd7720e7
+1	25257	1758664158121775550	/app/DROID-SLAM/build/temp.linux-x86_64-cpython-39/thirdparty/lietorch/lietorch/src/lietorch_cpu.o	ccb126d9506f42f3

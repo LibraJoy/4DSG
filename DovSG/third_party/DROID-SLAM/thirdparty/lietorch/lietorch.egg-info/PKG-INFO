@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: lietorch
+Version: 0.2
+Summary: Lie Groups for PyTorch
+Author: teedrz
+License-File: LICENSE
+Dynamic: author
+Dynamic: license-file
+Dynamic: summary
