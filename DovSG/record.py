@@ -4,11 +4,12 @@ Custom RealSense recorder that automatically creates unique directories
 Supports both live camera recording and ROS bag processing
 
 Usage:
-    Live recording: python dovsg/scripts/record.py
-    Bag processing: python dovsg/scripts/record.py --from-bag <bag_file> [--output-dir <dir>]
+    Live recording: python record.py
+    Bag processing: python record.py --from-bag <bag_file> [--output-dir <dir>]
 """
-from realsense_recorder import RecorderImage, RECORDER_DIR
-from bag_reader import BagReader
+from dovsg.scripts.realsense_recorder import RecorderImage
+from dovsg.scripts.bag_reader import BagReader
+from dovsg.utils.utils import RECORDER_DIR
 import threading
 from datetime import datetime
 import os
@@ -96,12 +97,11 @@ def process_bag(bag_file, output_dir=None):
     else:
         output_dir = Path(output_dir)
 
-    print(f"\nProcessing bag file: {bag_path}")
-    print(f"Output directory: {output_dir}")
+    print(f"\nProcessing: {bag_path.name}")
+    print(f"Output: {output_dir}")
 
     if output_dir.exists():
         if input("Output directory exists. Overwrite? [y/n]: ") != "y":
-            print("Cancelled.")
             return
         import shutil
         shutil.rmtree(output_dir)
@@ -114,29 +114,20 @@ def process_bag(bag_file, output_dir=None):
     os.makedirs(output_dir / "calibration", exist_ok=True)
 
     # Read bag file
-    print("\nReading bag file...")
     with BagReader(bag_file) as reader:
         total_frames = len(reader)
-        print(f"Total frames: {total_frames}")
+        print(f"Frames: {total_frames}")
 
         # Extract camera parameters
         intrinsic_matrix = reader.intrinsic_matrix
         dist_coef = reader.dist_coef
         intrinsic_dict = reader.intrinsic_dict
 
-        print("\n" + "="*60)
-        print("Camera Parameters:")
-        print(f"Resolution: {intrinsic_dict['width']}x{intrinsic_dict['height']}")
-        print(f"fx: {intrinsic_dict['fx']:.2f}, fy: {intrinsic_dict['fy']:.2f}")
-        print(f"cx: {intrinsic_dict['ppx']:.2f}, cy: {intrinsic_dict['ppy']:.2f}")
-        print("="*60 + "\n")
-
         # Depth scale (RealSense typically uses mm, same as RecorderImage)
         depth_scale = 0.001  # mm to meters
 
         # Process each frame
-        print("Processing frames...")
-        for frame_idx in tqdm(range(total_frames), desc="Converting frames"):
+        for frame_idx in tqdm(range(total_frames), desc="Converting"):
             color, depth = reader.get_frame(frame_idx)
 
             if color is None or depth is None:
@@ -198,11 +189,7 @@ def process_bag(bag_file, output_dir=None):
             f.write(f"{intrinsic_dict['fx']} {intrinsic_dict['fy']} "
                    f"{intrinsic_dict['ppx']} {intrinsic_dict['ppy']}")
 
-    print("\n" + "="*60)
-    print("Bag Processing Complete!")
-    print(f"Location: {output_dir}")
-    print(f"Frames processed: {total_frames}")
-    print("="*60)
+    print(f"\n✓ Complete! Processed {total_frames} frames → {output_dir}")
 
 
 if __name__ == "__main__":

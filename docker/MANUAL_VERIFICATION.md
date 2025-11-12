@@ -249,11 +249,43 @@ ls /app
 exit
 ```
 
-### 5. Realsense Camera recording data scripts
+### 5. Data Collection with RealSense Camera
+
+DovSG supports two data collection workflows:
+
+#### Option 1: Two-Stage ROS Bag Workflow (Recommended)
+
+**Stage 1 - Record ROS Bag:**
+```bash
+cd docker/
+./scripts/record_rosbag.sh
+```
+
+This launches the RealSense camera node, verifies RGB-D topics are publishing, and records to `/app/rosbags/recording_YYYYMMDD_HHMMSS.bag`.
+
+**Stage 2 - Process Bag to DovSG Format:**
+```bash
+# Process bag file (output auto-generated in data_example/)
+docker compose exec dovsg python record.py --from-bag data_example/rosbags/recording_*.bag
+
+# Specify custom output directory
+docker compose exec dovsg python record.py \
+    --from-bag data_example/rosbags/recording_20251112_154403.bag \
+    --output-dir data_example/room2
+```
+
+**Why ROS Bags?**
+- Decouple recording from processing (lightweight vs heavy ML environment)
+- Reprocess data multiple times without re-recording
+- Standard format for dataset sharing
+
+#### Option 2: Live Camera Recording (Legacy)
+Direct recording from RealSense D435i:
 ```bash
 docker compose exec dovsg python dovsg/scripts/realsense_recorder.py
 ```
 
+**Note**: Update camera serial number in `DovSG/record_rosbag.py` (default: "215222073770")
 ## Troubleshooting Tests
 
 ### "No module named 'XXX'"

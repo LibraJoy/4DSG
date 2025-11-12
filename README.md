@@ -67,10 +67,12 @@ cd 4DSG/docker
 - Extract to `DovSG/data_example/room1/`
 
 **Collecting Your Own Data with RealSense Camera**:
-- See detailed guide: [.claude/reports/realsense-d435i-setup-guide.md](.claude/reports/realsense-d435i-setup-guide.md)
-- **Important**: Update camera serial number in `DovSG/dovsg/scripts/realsense_recorder.py` (Line 22)
-  - Find your serial: `rs-enumerate-devices | grep "Serial Number"`
-  - Default is set to `"215222073770"` - replace with your D435i serial number
+- **Two-stage workflow** (recommended):
+  - Stage 1: Record ROS bags → `./scripts/record_rosbag.sh`
+  - Stage 2: Process offline → `docker compose exec dovsg python record.py --from-bag <bag_file>`
+- **Legacy workflow**: Direct recording → `docker compose exec dovsg python dovsg/scripts/realsense_recorder.py`
+- See [docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md) for detailed usage
+- **Important**: Update camera serial number in `DovSG/record_rosbag.py` (default: "215222073770")
 - Requires USB device access (already configured in `docker/docker-compose.yml`)
 
 ## Architecture

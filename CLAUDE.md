@@ -103,8 +103,10 @@ docker compose exec dovsg python dovsg/scripts/show_pointcloud.py \
 
 - `dovsg`: Main DovSG environment (CUDA 12.1, PyTorch 2.3, Python 3.9)
 - `droid-slam`: DROID-SLAM environment (CUDA 11.8, PyTorch 1.10, Python 3.9)
+- `realsense-recorder`: Lightweight ROS Noetic container for ROS bag recording
+- `roscore`: ROS master node (required for realsense-recorder)
 
-Both services mount `DovSG/` for live code editing - no rebuild needed for Python changes.
+Both dovsg and droid-slam services mount `DovSG/` for live code editing - no rebuild needed for Python changes.
 
 ### Interactive Viewer Controls
 

@@ -1,0 +1,35 @@
+# Lightweight ROS Noetic container for RealSense D435i bag recording
+# This container's only job is to connect to the camera and record ROS bags
+
+FROM ros:noetic-ros-base-focal
+
+# Avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install RealSense ROS package and dependencies
+RUN apt-get update && apt-get install -y \
+    ros-noetic-realsense2-camera \
+    ros-noetic-realsense2-description \
+    python3-rosbag \
+    python3-rospy \
+    python3-sensor-msgs \
+    python3-std-msgs \
+    python3-cv-bridge \
+    python-is-python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up ROS environment
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+
+# Create workspace for recording scripts
+WORKDIR /app
+
+# Copy recording script
+COPY DovSG/dovsg/scripts/ros_bag_recorder.py /app/scripts/ros_bag_recorder.py
+
+# Create rosbags output directory
+RUN mkdir -p /app/rosbags
+
+# Entry point for ROS
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]

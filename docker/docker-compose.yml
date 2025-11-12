@@ -2,6 +2,47 @@
 # Optimized for interactive development and debugging
 
 services:
+  # Used for test Realsense camera 
+  roscore:
+    image: ros-noetic-ubuntu20:latest
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+      - ROS_IP=172.24.44.111
+      - ROS_RUN_ID=12345678-1234-1234-1234-123456789abc
+    command: /bin/bash -c "source /opt/ros/noetic/setup.bash && export RUN_ID=$ROS_RUN_ID && roscore"
+
+    network_mode: host
+    stdin_open: true
+    tty: true
+
+  # Lightweight ROS Noetic container for RealSense bag recording
+  realsense-recorder:
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/Dockerfile.realsense-recorder
+    container_name: dovsg-realsense-recorder
+    environment:
+      - ROS_MASTER_URI=http://localhost:11311
+      - ROS_IP=172.24.44.111
+    # RealSense camera USB device access
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    privileged: true
+    volumes:
+      # Recording script
+      - ../DovSG/dovsg/scripts:/app/scripts
+      # Output directory for bag files
+      - ../DovSG/data_example/rosbags:/app/rosbags
+    working_dir: /app
+    depends_on:
+      - roscore
+    network_mode: host
+    command: tail -f /dev/null  # Keep container running
+    # Interactive development features
+    tty: true
+    stdin_open: true
+
+  # Only needed if using DROID-SLAM functionality
   droid-slam:
     build:
       context: ..

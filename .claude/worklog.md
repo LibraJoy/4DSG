@@ -763,3 +763,22 @@ This follows the same pattern as GroundingDINO (lines 92-96) and ensures the `_C
 
 
 - 2025-10-31: Docker build portability analysis → [.claude/report/docker-build-portability.md](.claude/report/docker-build-portability.md)
+- Created `docker/dockerfiles/Dockerfile.realsense-recorder` (ROS Noetic container for ROS bag recording)
+- Created `DovSG/dovsg/scripts/ros_bag_recorder.py` (records RealSense D435i to ROS bags)
+- Created `DovSG/dovsg/scripts/bag_reader.py` (reads ROS bags using rosbags library)
+- Created `docker/scripts/record_rosbag.sh` (helper script for recording)
+- Created `docker/scripts/README_ROSBAG.md` (usage guide)
+- Modified `docker/docker-compose.yml`: Added realsense-recorder service, fixed ROS_IP to 172.24.44.111
+- Modified `DovSG/dovsg/scripts/ros_bag_recorder.py`: Added check_roscore() function, added import os, added setup_ros_environment() to source ROS before rospy.init_node()
+- Modified `docker/dockerfiles/Dockerfile.dovsg`: Added rosbags Python library
+- Modified `DovSG/dovsg/scripts/record.py`: Added --from-bag and --output-dir flags, added process_bag() function
+- Modified `CLAUDE.md`: Documented two-stage ROS bag workflow
+- Modified `DovSG/dovsg/scripts/bag_reader.py`: Fixed ROS1 bag deserialization by adding ros1_to_cdr() conversion before deserialize_cdr() in _extract_camera_info() and _extract_all_frames() methods
+- Modified `DovSG/dovsg/scripts/ros_bag_recorder.py`: Added verify_camera_topics() function to check depth topics are actively publishing messages (not just advertised), increased initialization wait from 3s to 5s, switched from rs_camera.launch to rs_aligned_depth.launch, simplified parameters to match working realsense_recorder.py behavior, disabled stdout/stderr capture to show roslaunch errors
+- Created `DovSG/dovsg/scripts/test_realsense_topics.py`: Diagnostic script to verify published RealSense topics
+- Moved `DovSG/dovsg/scripts/record.py` to `DovSG/record.py` for easier access, fixed imports to use dovsg module paths
+- Copied `DovSG/dovsg/scripts/ros_bag_recorder.py` to `DovSG/record_rosbag.py` for reference
+- Modified `docker/dockerfiles/Dockerfile.realsense-recorder`: Added COPY instruction for ros_bag_recorder.py script
+- Simplified output logs in DovSG/record.py and DovSG/record_rosbag.py (removed verbose printouts, concise messaging)
+- Updated `README.md`: Changed script paths to new locations
+- Updated `docker/MANUAL_VERIFICATION.md`: Reorganized data collection section with updated paths and clearer instructions
