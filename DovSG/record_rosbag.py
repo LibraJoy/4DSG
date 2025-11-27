@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 """
-ROS bag recorder for RealSense D435i camera
-Records RGB-D data and IMU to ROS bag files for offline processing
+ROS bag recorder for RealSense D455 camera
+Records high-quality RGB-D data and IMU to ROS bag files for offline processing
 
-This script matches the exact camera configuration from record.py:
-- Resolution: 640x480
-- FPS: 15
-- Depth range: 0.3m - 3.0m
-- Spatial and temporal filtering enabled
-- Aligned depth to color
+Always records at maximum quality (1280x720@30fps) as archival format.
+Users can choose processing quality later using record.py --preset option.
 """
 
 import rospy
@@ -21,24 +17,24 @@ import os
 
 def launch_realsense_node():
     """
-    Launch RealSense camera node with matching configuration from record.py
+    Launch RealSense camera node with high-quality settings for archival recording
     """
     import subprocess
 
-    # RealSense node parameters - SIMPLIFIED
-    # Note: Original realsense_recorder.py applies filters in Python after capture.
-    # Keep ROS config minimal to avoid parameter conflicts.
+    # High-quality archival settings (users choose processing quality later)
+    # Note: ROS bag records RAW sensor data without filters
     params = {
-        'serial_no': '215222073770',
+        'serial_no': '318122303885',  # D455 camera
         'camera': 'camera',
 
-        # Resolution and FPS (matching RecorderImage: WH=[640, 480], FPS=15)
-        'depth_width': '640',
-        'depth_height': '480',
-        'depth_fps': '15',
-        'color_width': '640',
-        'color_height': '480',
-        'color_fps': '15',
+        # Maximum quality: 1280x720@30fps
+        # Users can downsample during processing with record.py --preset OPTIMIZED
+        'depth_width': '1280',
+        'depth_height': '720',
+        'depth_fps': '30',
+        'color_width': '1280',
+        'color_height': '720',
+        'color_fps': '30',
 
         # Enable required streams only
         'enable_depth': 'true',
@@ -56,22 +52,26 @@ def launch_realsense_node():
     for key, value in params.items():
         cmd.append(f'{key}:={value}')
 
-    print("\n" + "="*60)
-    print("Launching RealSense camera node...")
-    print(f"Resolution: 640x480 @ 15 fps")
-    print(f"Depth range: 0.3m - 3.0m")
-    print(f"Serial: {params['serial_no']}")
-    print("Filters: Spatial + Temporal + Disparity")
-    print("="*60)
+    print("\n" + "="*70)
+    print("Launching RealSense D455 Camera - High Quality Archival Recording")
+    print("="*70)
+    print(f"Resolution: 1280x720 @ 30 fps")
+    print(f"Camera Serial: {params['serial_no']}")
+    print(f"Format: RAW sensor data (no filters applied)")
+    print(f"\nNote: Use 'record.py --preset OPTIMIZED/ORIGINAL' to process bags")
+    print("="*70)
     print("\nRoslaunch command:")
     print(" ".join(cmd))
-    print("="*60 + "\n")
+    print("="*70 + "\n")
 
     # Launch in subprocess - DO NOT capture stdout/stderr so we can see errors!
     process = subprocess.Popen(cmd)
 
     # Wait for node to initialize
-    rospy.sleep(5.0)
+    print("Waiting for camera node to start publishing...")
+    rospy.sleep(5.0)  # Increased from 3s to 5s for better initialization
+
+    print("\nVerifying camera topics are being published...")
     return process
 
 
@@ -94,7 +94,7 @@ def record_bag(output_dir="/app/rosbags"):
     output_path.mkdir(parents=True, exist_ok=True)
     bag_file = output_path / f"recording_{timestamp}.bag"
 
-    print(f"\nOutput: {bag_file}\n")
+    print(f"\nBag file will be saved to: {bag_file}\n")
 
     # Topics to record
     topics = [
@@ -107,6 +107,11 @@ def record_bag(output_dir="/app/rosbags"):
         '/camera/gyro/sample',
     ]
 
+    print("Topics to record:")
+    for topic in topics:
+        print(f"  - {topic}")
+    print()
+
     # Verify camera topics are being published before recording
     # Focus on critical RGB-D topics (skip optional IMU topics for initial check)
     critical_topics = [
@@ -118,25 +123,41 @@ def record_bag(output_dir="/app/rosbags"):
     success, missing = verify_camera_topics(critical_topics, timeout=15)
 
     if not success:
-        print("\nERROR: Required camera topics not publishing!")
-        print("Check: Camera connection, ROS node status")
-        if input("\nContinue anyway? [y/n]: ").lower() != 'y':
+        print("\n" + "="*60)
+        print("ERROR: Camera not publishing required depth topics!")
+        print("="*60)
+        print("\nPossible causes:")
+        print("1. Camera not connected or not detected")
+        print("2. RealSense node configuration issue")
+        print("3. Depth stream not enabled in camera firmware")
+        print("\nTroubleshooting steps:")
+        print("- Check camera connection: lsusb | grep Intel")
+        print("- Verify depth is enabled in launch parameters")
+        print("- Try restarting the camera node")
+        print("\nDo you want to continue recording anyway? [y/n]: ", end="")
+        response = input()
+        if response.lower() != 'y':
+            print("Recording cancelled.")
             return None
 
     # Use rosbag record command
     import subprocess
     cmd = ['rosbag', 'record', '-O', str(bag_file)] + topics
 
-    input("\n>>> Press ENTER to START recording...")
+    input("\n\033[32m>>> Press ENTER to START recording...\033[0m")
 
-    print(">>> Recording... Press Ctrl+C to STOP\n")
+    print("\n\033[31m>>> Recording in progress. Press Ctrl+C to STOP...\033[0m\n")
 
     try:
+        # Run rosbag record (blocks until Ctrl+C)
         subprocess.run(cmd)
     except KeyboardInterrupt:
-        print("\nStopping...")
+        print("\n\nStopping recording...")
 
-    print(f"\n✓ Saved: {bag_file}")
+    print("\n" + "="*60)
+    print("Recording Complete!")
+    print(f"Bag file: {bag_file}")
+    print("="*60)
 
     return bag_file
 
@@ -260,22 +281,39 @@ def setup_ros_environment():
 
 def main():
     """
-    Main entry point for ROS bag recording
+    Main entry point for ROS bag recording (high-quality archival mode)
     """
+    import argparse
+
+    # Parse arguments
+    parser = argparse.ArgumentParser(
+        description="Record high-quality ROS bag from RealSense D455 camera",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Record high-quality bag (1280x720@30fps)
+  python record_rosbag.py
+
+  # Specify output directory
+  python record_rosbag.py --output /app/rosbags/room2
+
+Note:
+  ROS bags are always recorded at maximum quality (1280x720@30fps).
+  Choose processing quality later using:
+    python record.py --from-bag <bag_file> --preset OPTIMIZED
+    python record.py --from-bag <bag_file> --preset ORIGINAL
+        """
+    )
+    parser.add_argument('--output', type=str, default='/app/rosbags',
+                       help='Output directory for bag files (default: /app/rosbags)')
+
+    args = parser.parse_args()
 
     # Check if user wants to record
-    if len(sys.argv) > 1 and sys.argv[1] == "--help":
-        print("Usage: python ros_bag_recorder.py [output_dir]")
-        print("  output_dir: Directory to save bag files (default: /app/rosbags)")
-        return
-
     response = input("Do you want to record data? [y/n]: ")
     if response.lower() != 'y':
         print("Recording cancelled.")
         return
-
-    # Get output directory
-    output_dir = sys.argv[1] if len(sys.argv) > 1 else "/app/rosbags"
 
     # Setup ROS environment
     setup_ros_environment()
@@ -288,13 +326,15 @@ def main():
     print("Initializing ROS node...")
     rospy.init_node('realsense_bag_recorder', anonymous=True)
 
-    # Launch RealSense camera
+    # Launch RealSense camera (always high quality)
     camera_process = launch_realsense_node()
 
     try:
         # Record bag
-        bag_file = record_bag(output_dir)
-        print(f"\nSuccess! Bag saved to: {bag_file}")
+        bag_file = record_bag(args.output)
+        print(f"\nSuccess! High-quality bag saved to: {bag_file}")
+        print(f"\nProcess this bag with:")
+        print(f"  python record.py --from-bag {bag_file} --preset OPTIMIZED")
 
     except Exception as e:
         print(f"\nError during recording: {e}")

@@ -66,13 +66,18 @@ cd 4DSG/docker
 - Manual download required from [Google Drive](https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x?usp=sharing)
 - Extract to `DovSG/data_example/room1/`
 
-**Collecting Your Own Data with RealSense Camera**:
-- **Two-stage workflow** (recommended):
-  - Stage 1: Record ROS bags → `./scripts/record_rosbag.sh`
-  - Stage 2: Process offline → `docker compose exec dovsg python record.py --from-bag <bag_file>`
-- **Legacy workflow**: Direct recording → `docker compose exec dovsg python dovsg/scripts/realsense_recorder.py`
+**Collecting Your Own Data with RealSense D455 Camera**:
+- **Two-stage workflow** (recommended - high quality archival):
+  - Stage 1: Record ROS bag at 1280x720@30fps → `./scripts/record_rosbag.sh`
+  - Stage 2: Process with chosen quality → `docker compose exec dovsg python record.py --from-bag <bag_file> --preset OPTIMIZED`
+- **Direct recording**: Live recording with preset → `docker compose exec dovsg python record.py --preset OPTIMIZED`
+- **Camera presets** (processing quality selection):
+  - `OPTIMIZED`: 848x480@30fps, ~7GB/min storage (recommended for D455)
+  - `ORIGINAL`: 1280x720@30fps, ~16GB/min storage (legacy settings)
+  - Presets control: resolution, FPS, depth range when processing data
+  - Note: ROS bags always recorded at max quality (1280x720@30fps)
 - See [docker/MANUAL_VERIFICATION.md](docker/MANUAL_VERIFICATION.md) for detailed usage
-- **Important**: Update camera serial number in `DovSG/record_rosbag.py` (default: "215222073770")
+- **Camera**: RealSense D455 (serial: 318122303885)
 - Requires USB device access (already configured in `docker/docker-compose.yml`)
 
 ## Architecture

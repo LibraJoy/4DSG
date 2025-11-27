@@ -25,7 +25,7 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 WORKDIR /app
 
 # Copy recording script
-COPY DovSG/dovsg/scripts/ros_bag_recorder.py /app/scripts/ros_bag_recorder.py
+COPY DovSG/record_rosbag.py /app/record_rosbag.py
 
 # Create rosbags output directory
 RUN mkdir -p /app/rosbags

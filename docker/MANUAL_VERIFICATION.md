@@ -285,7 +285,35 @@ Direct recording from RealSense D435i:
 docker compose exec dovsg python dovsg/scripts/realsense_recorder.py
 ```
 
-**Note**: Update camera serial number in `DovSG/record_rosbag.py` (default: "215222073770")
+**Camera**: RealSense D455 (serial: 318122303885)
+
+**Recording Strategy**:
+- ROS bags are ALWAYS recorded at maximum quality (1280x720@30fps)
+- Choose processing quality later using record.py --preset option
+- This allows reprocessing the same bag with different settings
+
+**Workflow 1: Two-Stage (Recommended)**
+```bash
+# Stage 1: Record high-quality ROS bag
+cd docker/
+./scripts/record_rosbag.sh
+# Records at 1280x720@30fps (archival quality, ~16GB/min)
+
+# Stage 2a: Process with OPTIMIZED preset (recommended)
+docker compose exec dovsg python record.py --from-bag rosbags/recording_*.bag --preset OPTIMIZED
+# Output: 848x480 dataset, ~7GB/min
+
+# Stage 2b: OR process with ORIGINAL preset (full quality)
+docker compose exec dovsg python record.py --from-bag rosbags/recording_*.bag --preset ORIGINAL
+# Output: 1280x720 dataset, ~16GB/min
+```
+
+**Workflow 2: Direct Recording**
+```bash
+# Direct recording with chosen preset
+docker compose exec dovsg python record.py --preset OPTIMIZED
+docker compose exec dovsg python record.py --preset ORIGINAL
+```
 ## Troubleshooting Tests
 
 ### "No module named 'XXX'"

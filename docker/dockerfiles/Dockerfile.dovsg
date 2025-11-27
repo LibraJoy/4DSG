@@ -182,7 +182,8 @@ RUN pip install \
     graphviz \
     pyrender \
     openai==1.56.1 \
-    scikit-image==0.19.3
+    scikit-image==0.19.3 \
+    rosbags
 
 # Copy DovSG source code
 COPY DovSG/setup.py ./

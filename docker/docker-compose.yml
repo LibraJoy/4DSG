@@ -99,6 +99,8 @@ services:
       - ../DovSG/setup.py:/app/setup.py
       - ../DovSG/ace:/app/ace
       - ../DovSG/third_party:/app/third_party
+      - ../DovSG/config:/app/config
+      - ../DovSG/record.py:/app/record.py
       # X11 forwarding
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /app

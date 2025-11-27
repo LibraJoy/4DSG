@@ -71,6 +71,7 @@ Desktop.ini
 # Logs
 *.log
 logs/
+.claude/error_output.md
 
 # Temporary Files
 *.tmp

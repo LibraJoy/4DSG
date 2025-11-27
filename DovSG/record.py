@@ -4,7 +4,7 @@ Custom RealSense recorder that automatically creates unique directories
 Supports both live camera recording and ROS bag processing
 
 Usage:
-    Live recording: python record.py
+    Live recording: python record.py [--preset OPTIMIZED]
     Bag processing: python record.py --from-bag <bag_file> [--output-dir <dir>]
 """
 from dovsg.scripts.realsense_recorder import RecorderImage
@@ -18,9 +18,20 @@ from pathlib import Path
 import numpy as np
 import cv2
 from tqdm import tqdm
+import sys
+
+# Import camera presets
+sys.path.insert(0, str(Path(__file__).parent / "config"))
+from camera_presets import get_preset, print_preset_info
 
 
-def record():
+def record(preset="OPTIMIZED"):
+    """
+    Record data from RealSense camera using specified preset
+
+    Args:
+        preset: Camera preset name ("ORIGINAL" or "OPTIMIZED")
+    """
     if input("Do you want to record data? [y/n]: ") == "n":
         return
 
@@ -30,18 +41,24 @@ def record():
 
     print(f"\nData will be saved to: {recorder_dir}")
 
-    # Create recorder with compatible D435i settings
-    # Using 640x480 @ 15fps (best balance of speed and quality)
+    # Print preset info
+    print_preset_info(preset)
+
+    # Load preset configuration
+    config = get_preset(preset)
+
+    # Create recorder with preset settings
     imagerecorder = RecorderImage(
         recorder_dir=recorder_dir,
-        serial_number="215222073770",
-        WH=[640, 480],   # Standard resolution, fully supported
-        FPS=15,          # Good balance between smoothness and processing
-        depth_threshold=[0.3, 3.0]  # 30cm to 3m depth range
+        serial_number=config["serial_number"],
+        WH=[config["width"], config["height"]],
+        FPS=config["fps"],
+        depth_threshold=[config["depth_min"], config["depth_max"]]
     )
 
     print("\n" + "="*60)
     print("RealSense Camera Ready!")
+    print(f"Preset: {preset}")
     print(f"Resolution: {imagerecorder.WH[0]}x{imagerecorder.WH[1]} @ {imagerecorder.FPS} fps")
     print(f"Depth range: {imagerecorder.depth_threshold[0]}m - {imagerecorder.depth_threshold[1]}m")
     print("="*60)
@@ -194,18 +211,24 @@ def process_bag(bag_file, output_dir=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Record or process RealSense D435i data",
+        description="Record or process RealSense D455 data with camera presets",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  Live recording:
+  Live recording with OPTIMIZED preset (848x480@30fps):
     python record.py
+
+  Live recording with ORIGINAL preset (1280x720@30fps):
+    python record.py --preset ORIGINAL
 
   Process ROS bag:
     python record.py --from-bag recording_20250110_143022.bag
     python record.py --from-bag mybag.bag --output-dir data_example/room2
         """
     )
+    parser.add_argument('--preset', type=str, default='OPTIMIZED',
+                       choices=['ORIGINAL', 'OPTIMIZED'],
+                       help='Camera preset for live recording (default: OPTIMIZED)')
     parser.add_argument('--from-bag', type=str, help='Process data from ROS bag file')
     parser.add_argument('--output-dir', type=str, help='Output directory (default: auto-generated)')
 
@@ -216,4 +239,4 @@ Examples:
         process_bag(args.from_bag, args.output_dir)
     else:
         # Live recording mode
-        record()
+        record(preset=args.preset)

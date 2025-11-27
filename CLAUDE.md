@@ -160,6 +160,52 @@ cd docker/
 
 Sample data (~23GB) - manual download from [Google Drive](https://drive.google.com/drive/folders/13v5QOrqjxye__kJwDIuD7kTdeSSNfR5x?usp=sharing), extract to `DovSG/data_example/room1/`
 
+## Camera Presets
+
+Camera presets ([DovSG/config/camera_presets.py](DovSG/config/camera_presets.py)) provide optimized configurations for the RealSense D455 camera.
+
+**Key Design**:
+- ROS bags are **always recorded at maximum quality** (1280x720@30fps) for archival purposes
+- Presets control **processing quality** when converting bags to datasets or direct recording
+- Users can reprocess the same bag with different presets without re-recording
+
+### OPTIMIZED (recommended for processing)
+- Resolution: 848x480@30fps
+- Depth range: 0.4m - 3.5m
+- Storage: ~7GB/min (processed dataset)
+- **Usage**: Processing efficiency with good quality for D455
+
+### ORIGINAL (backward compatibility)
+- Resolution: 1280x720@30fps (cropped to 1200x600)
+- Depth range: 0.0m - 2.0m
+- Storage: ~16GB/min (processed dataset)
+- **Usage**: Full resolution, legacy DovSG settings
+
+**Auto-loaded parameters**: serial_number, width, height, fps, depth_min, depth_max
+**Manual edit required**: Depth filters (see [DovSG/config/camera_presets.py](DovSG/config/camera_presets.py:23-47) for detailed instructions)
+**Reference only**: SLAM parameters (used by pose_estimation.py, not recording)
+
+### Recording Workflows
+
+**Workflow 1: Two-Stage (Recommended)**
+```bash
+# Stage 1: Record high-quality ROS bag (1280x720@30fps)
+cd docker/
+./scripts/record_rosbag.sh
+
+# Stage 2: Process with chosen quality
+docker compose exec dovsg python record.py --from-bag rosbags/recording_*.bag --preset OPTIMIZED  # Efficient
+docker compose exec dovsg python record.py --from-bag rosbags/recording_*.bag --preset ORIGINAL   # Full quality
+```
+
+**Workflow 2: Direct Recording**
+```bash
+# Record directly with chosen preset
+docker compose exec dovsg python record.py --preset OPTIMIZED
+```
+
+**Camera**: RealSense D455 (serial: 318122303885)
+
 ## Dependencies
 
 Third-party code (required before building):

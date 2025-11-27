@@ -1,320 +1,259 @@
+cerlab@cerlab22:~/4DSG/docker$ ./scripts/record_rosbag.sh 
+This will record RGB-D data from RealSense D435i to a ROS bag file.
+Output directory: /app/rosbags
 
- => ERROR [dovsg 17/50] RUN pip install -e . --no-build-isolation                                                                                                       21.2s
-------
- > [dovsg 17/50] RUN pip install -e . --no-build-isolation:
-20.48 Obtaining file:///app/third_party/GroundingDINO
-20.48   Preparing metadata (setup.py): started
-20.48   Preparing metadata (setup.py): finished with status 'done'
-20.48 Requirement already satisfied: torch in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from groundingdino==0.1.0) (2.3.1+cu121)
-20.48 Requirement already satisfied: torchvision in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from groundingdino==0.1.0) (0.18.1+cu121)
-20.48 Collecting transformers (from groundingdino==0.1.0)
-20.48   Downloading transformers-4.57.1-py3-none-any.whl.metadata (43 kB)
-20.48 Collecting addict (from groundingdino==0.1.0)
-20.48   Downloading addict-2.4.0-py3-none-any.whl.metadata (1.0 kB)
-20.48 Collecting yapf (from groundingdino==0.1.0)
-20.48   Downloading yapf-0.43.0-py3-none-any.whl.metadata (46 kB)
-20.48 Collecting timm (from groundingdino==0.1.0)
-20.48   Downloading timm-1.0.21-py3-none-any.whl.metadata (62 kB)
-20.48 Requirement already satisfied: numpy in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from groundingdino==0.1.0) (2.0.2)
-20.48 Requirement already satisfied: opencv-python in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from groundingdino==0.1.0) (4.12.0.88)
-20.48 Collecting supervision>=0.22.0 (from groundingdino==0.1.0)
-20.48   Downloading supervision-0.26.1-py3-none-any.whl.metadata (13 kB)
-20.48 Collecting pycocotools (from groundingdino==0.1.0)
-20.48   Downloading pycocotools-2.0.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.3 kB)
-20.48 Collecting scipy>=1.10.0 (from supervision>=0.22.0->groundingdino==0.1.0)
-20.48   Downloading scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
-20.48 Requirement already satisfied: matplotlib>=3.6.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (3.9.4)
-20.48 Requirement already satisfied: pyyaml>=5.3 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (6.0.3)
-20.48 Requirement already satisfied: defusedxml>=0.7.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (0.7.1)
-20.48 Requirement already satisfied: pillow>=9.4 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (11.3.0)
-20.48 Requirement already satisfied: requests>=2.26.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (2.32.5)
-20.48 Requirement already satisfied: tqdm>=4.62.3 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from supervision>=0.22.0->groundingdino==0.1.0) (4.67.1)
-20.48 Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (1.3.0)
-20.48 Requirement already satisfied: cycler>=0.10 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (0.12.1)
-20.48 Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (4.60.1)
-20.48 Requirement already satisfied: kiwisolver>=1.3.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (1.4.7)
-20.48 Requirement already satisfied: packaging>=20.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (25.0)
-20.48 Requirement already satisfied: pyparsing>=2.3.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (3.2.5)
-20.48 Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (2.9.0.post0)
-20.48 Requirement already satisfied: importlib-resources>=3.2.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (6.5.2)
-20.48 Requirement already satisfied: zipp>=3.1.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from importlib-resources>=3.2.0->matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (3.23.0)
-20.48 Requirement already satisfied: six>=1.5 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from python-dateutil>=2.7->matplotlib>=3.6.0->supervision>=0.22.0->groundingdino==0.1.0) (1.17.0)
-20.48 Requirement already satisfied: charset_normalizer<4,>=2 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from requests>=2.26.0->supervision>=0.22.0->groundingdino==0.1.0) (3.4.4)
-20.48 Requirement already satisfied: idna<4,>=2.5 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from requests>=2.26.0->supervision>=0.22.0->groundingdino==0.1.0) (3.11)
-20.48 Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from requests>=2.26.0->supervision>=0.22.0->groundingdino==0.1.0) (2.5.0)
-20.48 Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from requests>=2.26.0->supervision>=0.22.0->groundingdino==0.1.0) (2025.10.5)
-20.48 Collecting huggingface_hub (from timm->groundingdino==0.1.0)
-20.48   Downloading huggingface_hub-1.0.1-py3-none-any.whl.metadata (13 kB)
-20.48 Collecting safetensors (from timm->groundingdino==0.1.0)
-20.48   Downloading safetensors-0.6.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
-20.48 Requirement already satisfied: filelock in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from huggingface_hub->timm->groundingdino==0.1.0) (3.19.1)
-20.48 Requirement already satisfied: fsspec>=2023.5.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from huggingface_hub->timm->groundingdino==0.1.0) (2025.9.0)
-20.48 Requirement already satisfied: httpx<1,>=0.23.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from huggingface_hub->timm->groundingdino==0.1.0) (0.28.1)
-20.48 Collecting shellingham (from huggingface_hub->timm->groundingdino==0.1.0)
-20.48   Downloading shellingham-1.5.4-py2.py3-none-any.whl.metadata (3.5 kB)
-20.48 Collecting typer-slim (from huggingface_hub->timm->groundingdino==0.1.0)
-20.48   Downloading typer_slim-0.20.0-py3-none-any.whl.metadata (16 kB)
-20.48 Requirement already satisfied: typing-extensions>=3.7.4.3 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from huggingface_hub->timm->groundingdino==0.1.0) (4.15.0)
-20.48 Collecting hf-xet<2.0.0,>=1.2.0 (from huggingface_hub->timm->groundingdino==0.1.0)
-20.48   Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
-20.48 Requirement already satisfied: anyio in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from httpx<1,>=0.23.0->huggingface_hub->timm->groundingdino==0.1.0) (4.11.0)
-20.48 Requirement already satisfied: httpcore==1.* in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from httpx<1,>=0.23.0->huggingface_hub->timm->groundingdino==0.1.0) (1.0.9)
-20.48 Requirement already satisfied: h11>=0.16 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface_hub->timm->groundingdino==0.1.0) (0.16.0)
-20.48 Requirement already satisfied: exceptiongroup>=1.0.2 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from anyio->httpx<1,>=0.23.0->huggingface_hub->timm->groundingdino==0.1.0) (1.3.0)
-20.48 Requirement already satisfied: sniffio>=1.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from anyio->httpx<1,>=0.23.0->huggingface_hub->timm->groundingdino==0.1.0) (1.3.1)
-20.48 Requirement already satisfied: sympy in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (1.14.0)
-20.48 Requirement already satisfied: networkx in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (3.2.1)
-20.48 Requirement already satisfied: jinja2 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (3.1.6)
-20.48 Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.1.105 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.105)
-20.48 Requirement already satisfied: nvidia-cuda-runtime-cu12==12.1.105 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.105)
-20.48 Requirement already satisfied: nvidia-cuda-cupti-cu12==12.1.105 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.105)
-20.48 Requirement already satisfied: nvidia-cudnn-cu12==8.9.2.26 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (8.9.2.26)
-20.48 Requirement already satisfied: nvidia-cublas-cu12==12.1.3.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.3.1)
-20.48 Requirement already satisfied: nvidia-cufft-cu12==11.0.2.54 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (11.0.2.54)
-20.48 Requirement already satisfied: nvidia-curand-cu12==10.3.2.106 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (10.3.2.106)
-20.48 Requirement already satisfied: nvidia-cusolver-cu12==11.4.5.107 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (11.4.5.107)
-20.48 Requirement already satisfied: nvidia-cusparse-cu12==12.1.0.106 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.0.106)
-20.48 Requirement already satisfied: nvidia-nccl-cu12==2.20.5 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (2.20.5)
-20.48 Requirement already satisfied: nvidia-nvtx-cu12==12.1.105 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (12.1.105)
-20.48 Requirement already satisfied: triton==2.3.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from torch->groundingdino==0.1.0) (2.3.1)
-20.48 Requirement already satisfied: nvidia-nvjitlink-cu12 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch->groundingdino==0.1.0) (12.9.86)
-20.48 Requirement already satisfied: MarkupSafe>=2.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from jinja2->torch->groundingdino==0.1.0) (2.1.5)
-20.48 Requirement already satisfied: mpmath<1.4,>=1.1.0 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from sympy->torch->groundingdino==0.1.0) (1.3.0)
-20.48 Collecting huggingface_hub (from timm->groundingdino==0.1.0)
-20.48   Downloading huggingface_hub-0.36.0-py3-none-any.whl.metadata (14 kB)
-20.48 Collecting regex!=2019.12.17 (from transformers->groundingdino==0.1.0)
-20.48   Downloading regex-2025.10.23-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
-20.48 Collecting tokenizers<=0.23.0,>=0.22.0 (from transformers->groundingdino==0.1.0)
-20.48   Downloading tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
-20.48 Collecting click>=8.0.0 (from typer-slim->huggingface_hub->timm->groundingdino==0.1.0)
-20.48   Downloading click-8.1.8-py3-none-any.whl.metadata (2.3 kB)
-20.48 Requirement already satisfied: platformdirs>=3.5.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from yapf->groundingdino==0.1.0) (4.4.0)
-20.48 Requirement already satisfied: tomli>=2.0.1 in /opt/conda/envs/dovsg/lib/python3.9/site-packages (from yapf->groundingdino==0.1.0) (2.3.0)
-20.48 Downloading supervision-0.26.1-py3-none-any.whl (207 kB)
-20.48 Downloading scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 38.6/38.6 MB 37.8 MB/s  0:00:01
-20.48 Downloading addict-2.4.0-py3-none-any.whl (3.8 kB)
-20.48 Downloading pycocotools-2.0.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (453 kB)
-20.48 Downloading timm-1.0.21-py3-none-any.whl (2.5 MB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.5/2.5 MB 43.9 MB/s  0:00:00
-20.48 Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 42.7 MB/s  0:00:00
-20.48 Downloading safetensors-0.6.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (485 kB)
-20.48 Downloading transformers-4.57.1-py3-none-any.whl (12.0 MB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 43.8 MB/s  0:00:00
-20.48 Downloading huggingface_hub-0.36.0-py3-none-any.whl (566 kB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.1/566.1 kB 33.7 MB/s  0:00:00
-20.48 Downloading tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 42.3 MB/s  0:00:00
-20.48 Downloading regex-2025.10.23-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (791 kB)
-20.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 791.1/791.1 kB 26.0 MB/s  0:00:00
-20.48 Downloading yapf-0.43.0-py3-none-any.whl (256 kB)
-20.48 Installing collected packages: addict, yapf, scipy, safetensors, regex, pycocotools, hf-xet, huggingface_hub, tokenizers, supervision, transformers, timm, groundingdino
-20.48   Running setup.py develop for groundingdino
-20.48 
-20.48   DEPRECATION: Legacy editable install of groundingdino==0.1.0 from file:///app/third_party/GroundingDINO (setup.py develop) is deprecated. pip 25.3 will enforce this behaviour change. A possible replacement is to add a pyproject.toml or enable --use-pep517, and use setuptools >= 64. If the resulting installation is not behaving as expected, try using --config-settings editable_mode=compat. Please consult the setuptools documentation for more information. Discussion can be found at https://github.com/pypa/pip/issues/11457
-20.48     error: subprocess-exited-with-error
-20.48     
-20.48     × python setup.py develop did not run successfully.
-20.48     │ exit code: 1
-20.48     ╰─> [92 lines of output]
-20.48         No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda-12.1'
-20.48         Building wheel groundingdino-0.1.0
-20.48         Compiling with CUDA
-20.48         running develop
-20.48         /opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/cmd.py:90: DevelopDeprecationWarning: develop command is deprecated.
-20.48         !!
-20.48         
-20.48                 ********************************************************************************
-20.48                 Please avoid running ``setup.py`` and ``develop``.
-20.48                 Instead, use standards-based tools like pip or uv.
-20.48         
-20.48                 By 2025-Oct-31, you need to update your project and remove deprecated calls
-20.48                 or your builds will no longer be supported.
-20.48         
-20.48                 See https://github.com/pypa/setuptools/issues/917 for details.
-20.48                 ********************************************************************************
-20.48         
-20.48         !!
-20.48           self.initialize_options()
-20.48         Obtaining file:///app/third_party/GroundingDINO
-20.48           Installing build dependencies: started
-20.48           Installing build dependencies: finished with status 'done'
-20.48           Checking if build backend supports build_editable: started
-20.48           Checking if build backend supports build_editable: finished with status 'done'
-20.48           Getting requirements to build editable: started
-20.48           Getting requirements to build editable: finished with status 'error'
-20.48           error: subprocess-exited-with-error
-20.48         
-20.48           × Getting requirements to build editable did not run successfully.
-20.48           │ exit code: 1
-20.48           ╰─> [29 lines of output]
-20.48               /opt/conda/envs/dovsg/bin/python3.9: No module named pip
-20.48               Traceback (most recent call last):
-20.48                 File "<string>", line 32, in install_torch
-20.48               ModuleNotFoundError: No module named 'torch'
-20.48         
-20.48               During handling of the above exception, another exception occurred:
-20.48         
-20.48               Traceback (most recent call last):
-20.48                 File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 389, in <module>
-20.48                   main()
-20.48                 File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 373, in main
-20.48                   json_out["return_val"] = hook(**hook_input["kwargs"])
-20.48                 File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 157, in get_requires_for_build_editable
-20.48                   return hook(config_settings)
-20.48                 File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 473, in get_requires_for_build_editable
-20.48                   return self.get_requires_for_build_wheel(config_settings)
-20.48                 File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 331, in get_requires_for_build_wheel
-20.48                   return self._get_build_requires(config_settings, requirements=[])
-20.48                 File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
-20.48                   self.run_setup()
-20.48                 File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 512, in run_setup
-20.48                   super().run_setup(setup_script=setup_script)
-20.48                 File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 317, in run_setup
-20.48                   exec(code, locals())
-20.48                 File "<string>", line 37, in <module>
-20.48                 File "<string>", line 34, in install_torch
-20.48                 File "/opt/conda/envs/dovsg/lib/python3.9/subprocess.py", line 373, in check_call
-20.48                   raise CalledProcessError(retcode, cmd)
-20.48               subprocess.CalledProcessError: Command '['/opt/conda/envs/dovsg/bin/python3.9', '-m', 'pip', 'install', 'torch']' returned non-zero exit status 1.
-20.48               [end of output]
-20.48         
-20.48           note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48         error: subprocess-exited-with-error
-20.48         
-20.48         × Getting requirements to build editable did not run successfully.
-20.48         │ exit code: 1
-20.48         ╰─> See above for output.
-20.48         
-20.48         note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48         Traceback (most recent call last):
-20.48           File "<string>", line 2, in <module>
-20.48           File "<pip-setuptools-caller>", line 35, in <module>
-20.48           File "/app/third_party/GroundingDINO/setup.py", line 204, in <module>
-20.48             setup(
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/__init__.py", line 115, in setup
-20.48             return distutils.core.setup(**attrs)
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 186, in setup
-20.48             return run_commands(dist)
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 202, in run_commands
-20.48             dist.run_commands()
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 1002, in run_commands
-20.48             self.run_command(cmd)
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/dist.py", line 1102, in run_command
-20.48             super().run_command(command)
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 1021, in run_command
-20.48             cmd_obj.run()
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/command/develop.py", line 39, in run
-20.48             subprocess.check_call(cmd)
-20.48           File "/opt/conda/envs/dovsg/lib/python3.9/subprocess.py", line 373, in check_call
-20.48             raise CalledProcessError(retcode, cmd)
-20.48         subprocess.CalledProcessError: Command '['/opt/conda/envs/dovsg/bin/python3.9', '-m', 'pip', 'install', '-e', '.', '--use-pep517', '--no-deps']' returned non-zero exit status 1.
-20.48         [end of output]
-20.48     
-20.48     note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48 error: subprocess-exited-with-error
-20.48 
-20.48 × python setup.py develop did not run successfully.
-20.48 │ exit code: 1
-20.48 ╰─> [92 lines of output]
-20.48     No CUDA runtime is found, using CUDA_HOME='/usr/local/cuda-12.1'
-20.48     Building wheel groundingdino-0.1.0
-20.48     Compiling with CUDA
-20.48     running develop
-20.48     /opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/cmd.py:90: DevelopDeprecationWarning: develop command is deprecated.
-20.48     !!
-20.48     
-20.48             ********************************************************************************
-20.48             Please avoid running ``setup.py`` and ``develop``.
-20.48             Instead, use standards-based tools like pip or uv.
-20.48     
-20.48             By 2025-Oct-31, you need to update your project and remove deprecated calls
-20.48             or your builds will no longer be supported.
-20.48     
-20.48             See https://github.com/pypa/setuptools/issues/917 for details.
-20.48             ********************************************************************************
-20.48     
-20.48     !!
-20.48       self.initialize_options()
-20.48     Obtaining file:///app/third_party/GroundingDINO
-20.48       Installing build dependencies: started
-20.48       Installing build dependencies: finished with status 'done'
-20.48       Checking if build backend supports build_editable: started
-20.48       Checking if build backend supports build_editable: finished with status 'done'
-20.48       Getting requirements to build editable: started
-20.48       Getting requirements to build editable: finished with status 'error'
-20.48       error: subprocess-exited-with-error
-20.48     
-20.48       × Getting requirements to build editable did not run successfully.
-20.48       │ exit code: 1
-20.48       ╰─> [29 lines of output]
-20.48           /opt/conda/envs/dovsg/bin/python3.9: No module named pip
-20.48           Traceback (most recent call last):
-20.48             File "<string>", line 32, in install_torch
-20.48           ModuleNotFoundError: No module named 'torch'
-20.48     
-20.48           During handling of the above exception, another exception occurred:
-20.48     
-20.48           Traceback (most recent call last):
-20.48             File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 389, in <module>
-20.48               main()
-20.48             File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 373, in main
-20.48               json_out["return_val"] = hook(**hook_input["kwargs"])
-20.48             File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 157, in get_requires_for_build_editable
-20.48               return hook(config_settings)
-20.48             File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 473, in get_requires_for_build_editable
-20.48               return self.get_requires_for_build_wheel(config_settings)
-20.48             File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 331, in get_requires_for_build_wheel
-20.48               return self._get_build_requires(config_settings, requirements=[])
-20.48             File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
-20.48               self.run_setup()
-20.48             File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 512, in run_setup
-20.48               super().run_setup(setup_script=setup_script)
-20.48             File "/tmp/pip-build-env-s3uwoh4g/overlay/lib/python3.9/site-packages/setuptools/build_meta.py", line 317, in run_setup
-20.48               exec(code, locals())
-20.48             File "<string>", line 37, in <module>
-20.48             File "<string>", line 34, in install_torch
-20.48             File "/opt/conda/envs/dovsg/lib/python3.9/subprocess.py", line 373, in check_call
-20.48               raise CalledProcessError(retcode, cmd)
-20.48           subprocess.CalledProcessError: Command '['/opt/conda/envs/dovsg/bin/python3.9', '-m', 'pip', 'install', 'torch']' returned non-zero exit status 1.
-20.48           [end of output]
-20.48     
-20.48       note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48     error: subprocess-exited-with-error
-20.48     
-20.48     × Getting requirements to build editable did not run successfully.
-20.48     │ exit code: 1
-20.48     ╰─> See above for output.
-20.48     
-20.48     note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48     Traceback (most recent call last):
-20.48       File "<string>", line 2, in <module>
-20.48       File "<pip-setuptools-caller>", line 35, in <module>
-20.48       File "/app/third_party/GroundingDINO/setup.py", line 204, in <module>
-20.48         setup(
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/__init__.py", line 115, in setup
-20.48         return distutils.core.setup(**attrs)
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 186, in setup
-20.48         return run_commands(dist)
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 202, in run_commands
-20.48         dist.run_commands()
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 1002, in run_commands
-20.48         self.run_command(cmd)
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/dist.py", line 1102, in run_command
-20.48         super().run_command(command)
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 1021, in run_command
-20.48         cmd_obj.run()
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/site-packages/setuptools/command/develop.py", line 39, in run
-20.48         subprocess.check_call(cmd)
-20.48       File "/opt/conda/envs/dovsg/lib/python3.9/subprocess.py", line 373, in check_call
-20.48         raise CalledProcessError(retcode, cmd)
-20.48     subprocess.CalledProcessError: Command '['/opt/conda/envs/dovsg/bin/python3.9', '-m', 'pip', 'install', '-e', '.', '--use-pep517', '--no-deps']' returned non-zero exit status 1.
-20.48     [end of output]
-20.48 
-20.48 note: This error originates from a subprocess, and is likely not a problem with pip.
-20.48 
-20.48 ERROR conda.cli.main_run:execute(127): `conda run /bin/bash -c pip install -e . --no-build-isolation` failed. (See above for error)
-20.48 
-------
-failed to solve: process "conda run -n dovsg /bin/bash -c pip install -e . --no-build-isolation" did not complete successfully: exit code: 1
+
+Launching ROS bag recorder...
+Do you want to record data? [y/n]: y
+Setting up ROS environment...
+✓ ROS environment configured
+  ROS_PACKAGE_PATH: /opt/ros/noetic/share...
+
+Checking for roscore...
+✓ roscore is running
+
+Initializing ROS node...
+
+============================================================
+Launching RealSense camera node...
+Resolution: 640x480 @ 15 fps
+Depth range: 0.3m - 3.0m
+Serial: 215222073770
+Filters: Spatial + Temporal + Disparity
+============================================================
+
+Roslaunch command:
+roslaunch realsense2_camera rs_aligned_depth.launch serial_no:=215222073770 camera:=camera depth_width:=640 depth_height:=480 depth_fps:=15 color_width:=640 color_height:=480 color_fps:=15 enable_depth:=true enable_color:=true enable_infra1:=false enable_infra2:=false align_depth:=true enable_sync:=true
+============================================================
+
+Waiting for camera node to start publishing...
+... logging to /root/.ros/log/57e7fd8c-bfde-11f0-aed0-6c02e04fde8e/roslaunch-cerlab22-55.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+
+started roslaunch server http://172.24.44.111:46833/
+
+SUMMARY
+========
+
+PARAMETERS
+ * /camera/realsense2_camera/accel_fps: 250
+ * /camera/realsense2_camera/accel_frame_id: camera_accel_frame
+ * /camera/realsense2_camera/accel_optical_frame_id: camera_accel_opti...
+ * /camera/realsense2_camera/align_depth: True
+ * /camera/realsense2_camera/aligned_depth_to_color_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/aligned_depth_to_fisheye1_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/aligned_depth_to_fisheye2_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/aligned_depth_to_fisheye_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/aligned_depth_to_infra1_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/aligned_depth_to_infra2_frame_id: camera_aligned_de...
+ * /camera/realsense2_camera/allow_no_texture_points: False
+ * /camera/realsense2_camera/base_frame_id: camera_link
+ * /camera/realsense2_camera/calib_odom_file: 
+ * /camera/realsense2_camera/clip_distance: -1.0
+ * /camera/realsense2_camera/color_fps: 15
+ * /camera/realsense2_camera/color_frame_id: camera_color_frame
+ * /camera/realsense2_camera/color_height: 480
+ * /camera/realsense2_camera/color_optical_frame_id: camera_color_opti...
+ * /camera/realsense2_camera/color_width: 640
+ * /camera/realsense2_camera/confidence_fps: 30
+ * /camera/realsense2_camera/confidence_height: 480
+ * /camera/realsense2_camera/confidence_width: 640
+ * /camera/realsense2_camera/depth_fps: 15
+ * /camera/realsense2_camera/depth_frame_id: camera_depth_frame
+ * /camera/realsense2_camera/depth_height: 480
+ * /camera/realsense2_camera/depth_optical_frame_id: camera_depth_opti...
+ * /camera/realsense2_camera/depth_width: 640
+ * /camera/realsense2_camera/device_type: 
+ * /camera/realsense2_camera/enable_accel: True
+ * /camera/realsense2_camera/enable_color: True
+ * /camera/realsense2_camera/enable_confidence: True
+ * /camera/realsense2_camera/enable_depth: True
+ * /camera/realsense2_camera/enable_fisheye1: False
+ * /camera/realsense2_camera/enable_fisheye2: False
+ * /camera/realsense2_camera/enable_fisheye: True
+ * /camera/realsense2_camera/enable_gyro: True
+ * /camera/realsense2_camera/enable_infra1: False
+ * /camera/realsense2_camera/enable_infra2: False
+ * /camera/realsense2_camera/enable_infra: False
+ * /camera/realsense2_camera/enable_pointcloud: False
+ * /camera/realsense2_camera/enable_pose: False
+ * /camera/realsense2_camera/enable_sync: True
+ * /camera/realsense2_camera/filters: 
+ * /camera/realsense2_camera/fisheye1_frame_id: camera_fisheye1_f...
+ * /camera/realsense2_camera/fisheye1_optical_frame_id: camera_fisheye1_o...
+ * /camera/realsense2_camera/fisheye2_frame_id: camera_fisheye2_f...
+ * /camera/realsense2_camera/fisheye2_optical_frame_id: camera_fisheye2_o...
+ * /camera/realsense2_camera/fisheye_fps: 30
+ * /camera/realsense2_camera/fisheye_frame_id: camera_fisheye_frame
+ * /camera/realsense2_camera/fisheye_height: 480
+ * /camera/realsense2_camera/fisheye_optical_frame_id: camera_fisheye_op...
+ * /camera/realsense2_camera/fisheye_width: 640
+ * /camera/realsense2_camera/gyro_fps: 400
+ * /camera/realsense2_camera/gyro_frame_id: camera_gyro_frame
+ * /camera/realsense2_camera/gyro_optical_frame_id: camera_gyro_optic...
+ * /camera/realsense2_camera/imu_optical_frame_id: camera_imu_optica...
+ * /camera/realsense2_camera/infra1_frame_id: camera_infra1_frame
+ * /camera/realsense2_camera/infra1_optical_frame_id: camera_infra1_opt...
+ * /camera/realsense2_camera/infra2_frame_id: camera_infra2_frame
+ * /camera/realsense2_camera/infra2_optical_frame_id: camera_infra2_opt...
+ * /camera/realsense2_camera/infra_fps: 30
+ * /camera/realsense2_camera/infra_height: 480
+ * /camera/realsense2_camera/infra_rgb: False
+ * /camera/realsense2_camera/infra_width: 640
+ * /camera/realsense2_camera/initial_reset: False
+ * /camera/realsense2_camera/json_file_path: 
+ * /camera/realsense2_camera/linear_accel_cov: 0.01
+ * /camera/realsense2_camera/odom_frame_id: camera_odom_frame
+ * /camera/realsense2_camera/ordered_pc: False
+ * /camera/realsense2_camera/pointcloud_texture_index: 0
+ * /camera/realsense2_camera/pointcloud_texture_stream: RS2_STREAM_COLOR
+ * /camera/realsense2_camera/pose_frame_id: camera_pose_frame
+ * /camera/realsense2_camera/pose_optical_frame_id: camera_pose_optic...
+ * /camera/realsense2_camera/publish_odom_tf: True
+ * /camera/realsense2_camera/publish_tf: True
+ * /camera/realsense2_camera/reconnect_timeout: 6.0
+ * /camera/realsense2_camera/rosbag_filename: 
+ * /camera/realsense2_camera/serial_no: 215222073770
+ * /camera/realsense2_camera/stereo_module/exposure/1: 7500
+ * /camera/realsense2_camera/stereo_module/exposure/2: 1
+ * /camera/realsense2_camera/stereo_module/gain/1: 16
+ * /camera/realsense2_camera/stereo_module/gain/2: 16
+ * /camera/realsense2_camera/tf_publish_rate: 0.0
+ * /camera/realsense2_camera/topic_odom_in: camera/odom_in
+ * /camera/realsense2_camera/unite_imu_method: none
+ * /camera/realsense2_camera/usb_port_id: 
+ * /camera/realsense2_camera/wait_for_device_timeout: -1.0
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+
+NODES
+  /camera/
+    realsense2_camera (nodelet/nodelet)
+    realsense2_camera_manager (nodelet/nodelet)
+
+ROS_MASTER_URI=http://localhost:11311
+
+process[camera/realsense2_camera_manager-1]: started with pid [64]
+process[camera/realsense2_camera-2]: started with pid [65]
+[INFO] [1762962239.221610782]: Initializing nodelet with 32 worker threads.
+[INFO] [1762962239.281496683]: RealSense ROS v2.3.2
+[INFO] [1762962239.281514876]: Built with LibRealSense v2.50.0
+[INFO] [1762962239.281520043]: Running with LibRealSense v2.50.0
+[INFO] [1762962239.300676170]:  
+ 12/11 15:43:59,304 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 300, error: Resource temporarily unavailable, number: b
+[INFO] [1762962239.387564090]: Device with serial number 215222073770 was found.
+
+[INFO] [1762962239.387584243]: Device with physical ID 2-10-13 was found.
+[INFO] [1762962239.387588911]: Device with name Intel RealSense D435I was found.
+[INFO] [1762962239.387757857]: Device with port number 2-10 was found.
+[INFO] [1762962239.387766302]: Device USB type: 3.2
+[INFO] [1762962239.388586709]: getParameters...
+[INFO] [1762962239.408077818]: setupDevice...
+[INFO] [1762962239.408093386]: JSON file is not provided
+[INFO] [1762962239.408097454]: ROS Node Namespace: camera
+[INFO] [1762962239.408119423]: Device Name: Intel RealSense D435I
+[INFO] [1762962239.408124415]: Device Serial No: 215222073770
+[INFO] [1762962239.408127960]: Device physical port: 2-10-13
+[INFO] [1762962239.408132177]: Device FW version: 05.16.00.01
+[INFO] [1762962239.408135826]: Device Product ID: 0x0B3A
+[INFO] [1762962239.408143548]: Enable PointCloud: Off
+[INFO] [1762962239.408148334]: Align Depth: On
+[INFO] [1762962239.408153506]: Sync Mode: On
+[INFO] [1762962239.408179355]: Device Sensors: 
+[INFO] [1762962239.423480619]: Stereo Module was found.
+[INFO] [1762962239.431446806]: RGB Camera was found.
+[INFO] [1762962239.431529626]: Motion Module was found.
+[INFO] [1762962239.431547176]: (Fisheye, 0) sensor isn't supported by current device! -- Skipping...
+[INFO] [1762962239.431553728]: (Confidence, 0) sensor isn't supported by current device! -- Skipping...
+[INFO] [1762962239.431727959]: num_filters: 1
+[INFO] [1762962239.431735370]: Setting Dynamic reconfig parameters.
+hwmon command 0x80( 5 0 0 0 ) failed (response -7= HW not ready)
+hwmon command 0x80( 5 0 0 0 ) failed (response -7= HW not ready)
+hwmon command 0x80( 5 0 0 0 ) failed (response -7= HW not ready)
+hwmon command 0x80( 5 0 0 0 ) failed (response -7= HW not ready)
+[INFO] [1762962240.013159254]: Done Setting Dynamic reconfig parameters.
+[INFO] [1762962240.013424831]: depth stream is enabled - width: 640, height: 480, fps: 15, Format: Z16
+[INFO] [1762962240.013672443]: color stream is enabled - width: 640, height: 480, fps: 15, Format: RGB8
+[INFO] [1762962240.014264461]: gyro stream is enabled - fps: 400
+[WARN] [1762962240.014274149]: No mathcing profile found for accel with fps=250
+[WARN] [1762962240.014280020]: Using default profile instead.
+[INFO] [1762962240.014285486]: accel stream is enabled - fps: 100
+[INFO] [1762962240.014293561]: setupPublishers...
+[INFO] [1762962240.014991553]: Expected frequency for depth = 15.00000
+[INFO] [1762962240.016042317]: Expected frequency for color = 15.00000
+[INFO] [1762962240.016569349]: Expected frequency for aligned_depth_to_color = 15.00000
+[INFO] [1762962240.017922587]: setupStreams...
+ 12/11 15:44:00,043 WARNING [132068365301504] (ds5-motion.cpp:473) IMU Calibration is not available, default intrinsic and extrinsic will be used.
+ 12/11 15:44:00,070 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[INFO] [1762962240.120410706]: SELECTED BASE:Depth, 0
+[INFO] [1762962240.125561798]: RealSense Node Is Up!
+[WARN] [1762962240.259895208]: 
+ 12/11 15:44:00,260 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,310 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,360 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,411 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,624 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,675 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:00,927 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+[WARN] [1762962241.013835667]: Hardware Notification:Motion Module failure,1.76296e+12,Error,Hardware Error
+
+Verifying camera topics are being published...
+
+Bag file will be saved to: /app/rosbags/recording_20251112_154403.bag
+
+Topics to record:
+  - /camera/color/image_raw
+  - /camera/aligned_depth_to_color/image_raw
+  - /camera/color/camera_info
+  - /camera/depth/camera_info
+  - /camera/imu
+  - /camera/accel/sample
+  - /camera/gyro/sample
+
+
+Waiting up to 15s for camera topics to publish messages...
+  ✓ /camera/color/image_raw - receiving messages
+  ✓ /camera/aligned_depth_to_color/image_raw - receiving messages
+  ✓ /camera/color/camera_info - receiving messages
+
+✓ All required camera topics are actively publishing:
+  ✓ /camera/color/image_raw
+  ✓ /camera/aligned_depth_to_color/image_raw
+  ✓ /camera/color/camera_info
+
+>>> Press ENTER to START recording...
+
+>>> Recording in progress. Press Ctrl+C to STOP...
+
+[INFO] [1762962250.583057217]: Subscribing to /camera/accel/sample
+[INFO] [1762962250.584340377]: Subscribing to /camera/aligned_depth_to_color/image_raw
+[INFO] [1762962250.585177783]: Subscribing to /camera/color/camera_info
+[INFO] [1762962250.586000134]: Subscribing to /camera/color/image_raw
+[INFO] [1762962250.586814164]: Subscribing to /camera/depth/camera_info
+[INFO] [1762962250.587628166]: Subscribing to /camera/gyro/sample
+[INFO] [1762962250.588442913]: Subscribing to /camera/imu
+[INFO] [1762962250.589416840]: Recording to '/app/rosbags/recording_20251112_154403.bag'.
+ 12/11 15:44:10,787 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:12,839 WARNING [132068340123392] (messenger-libusb.cpp:42) control_transfer returned error, index: 768, error: Resource temporarily unavailable, number: 11
+ 12/11 15:44:51,253 ERROR [132067534817024] (ds5-options.cpp:88) Asic Temperature value is not valid!
+ 12/11 15:44:52,256 ERROR [132067534817024] (ds5-options.cpp:88) Asic Temperature value is not valid!
+ 12/11 15:44:53,259 ERROR [132067534817024] (ds5-options.cpp:88) Asic Temperature value is not valid!
+^C[camera/realsense2_camera-2] killing on exit
+[camera/realsense2_camera_manager-1] killing on exit
+^Cshutting down processing monitor...
+... shutting down processing monitor complete
+done
+
+============================================================
+Recording Complete!
+Bag file: /app/rosbags/recording_20251112_154403.bag
+============================================================
+
+Success! Bag saved to: /app/rosbags/recording_20251112_154403.bag
+
+Shutting down camera node...
+Done.
+
+Recording session complete!
